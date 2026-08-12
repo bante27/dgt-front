@@ -1,16 +1,15 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
 @layer base {
   body {
     background-color: #09090b;
     color: #f3f4f6;
-    font-family: 'Inter', system-ui, sans-serif;
+    font-family: "Inter", system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
   }
 }
 
+/* Glass effect */
 .glass {
   background: rgba(18, 18, 22, 0.7);
   backdrop-filter: blur(12px);
@@ -21,33 +20,49 @@
 .glass-card {
   background: rgba(24, 24, 27, 0.6);
   backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .glow-gradient {
-  background: linear-gradient(135deg, #6366f1 0%, #ec4899 50%, #06b6d4 100%);
+  background: linear-gradient(
+    135deg,
+    #6366f1 0%,
+    #ec4899 50%,
+    #06b6d4 100%
+  );
 }
 
 .text-gradient {
-  background: linear-gradient(135deg, #818cf8 0%, #f472b6 50%, #22d3ee 100%);
+  background: linear-gradient(
+    135deg,
+    #818cf8 0%,
+    #f472b6 50%,
+    #22d3ee 100%
+  );
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
 /* Custom Scrollbar */
-::-webkit-scrollbar {
+*::-webkit-scrollbar {
   width: 8px;
 }
-::-webkit-scrollbar-track {
+
+*::-webkit-scrollbar-track {
   background: #09090b;
 }
-::-webkit-scrollbar-thumb {
+
+*::-webkit-scrollbar-thumb {
   background: #27272a;
   border-radius: 4px;
 }
-::-webkit-scrollbar-thumb:hover {
+
+*::-webkit-scrollbar-thumb:hover {
   background: #3f3f46;
 }
+
 /* CSS Logo Badge */
 .mh-logo-badge {
   position: relative;
@@ -64,7 +79,7 @@
 
 .mh-logo-text {
   color: #ffffff;
-  font-family: 'Georgia', serif;
+  font-family: "Georgia", serif;
   font-weight: 900;
   font-style: italic;
   line-height: 1;
