@@ -38,7 +38,7 @@ export default function Footer() {
   };
 
   return (
-    <footer className="bg-white pt-5 pb-6 font-sans text-slate-900 border-t border-slate-100">
+    <footer className="bg-white pt-5 pb-28 md:pb-6 font-sans text-slate-900 border-t border-slate-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Main Footer Layout: 2 Columns */}
