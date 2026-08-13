@@ -389,9 +389,13 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Right Column: Hero Video Container with NO icons/controls, pausing completely on scroll */}
-          <div className="lg:col-span-6 w-full flex justify-center lg:justify-end items-center pr-0 lg:pr-8">
-            <div id="hero-video-container" className="w-full max-w-xs aspect-[9/16] relative flex items-center justify-center bg-transparent overflow-hidden rounded-2xl border border-slate-200 pointer-events-none">
+          {/* Right Column: Hero Video Container */}
+          <div className="lg:col-span-6 w-full flex justify-center lg:justify-end items-center pr-0 lg:pr-8 m-0 p-0 border-none shadow-none">
+            <div 
+              id="hero-video-container" 
+              className="w-full max-w-xs relative flex items-center justify-center bg-transparent overflow-hidden m-0 p-0 border-none outline-none shadow-none"
+              style={{ width: '100%', maxWidth: '20rem', aspectRatio: '9/16', border: 'none', outline: 'none', boxShadow: 'none', margin: 0, padding: 0 }}
+            >
               {isVideoLoading ? (
                 <div className="flex flex-col items-center justify-center gap-2 text-slate-400">
                   <span className="text-[11px] font-medium">Loading video player...</span>
@@ -405,14 +409,16 @@ export default function Home() {
                     muted
                     loop
                     playsInline
-                    className="w-full h-full object-cover bg-transparent pointer-events-none"
+                    className="w-full h-full object-cover bg-transparent border-none outline-none shadow-none m-0 p-0 pointer-events-none"
+                    style={{ width: '100%', height: '100%', aspectRatio: '9/16', border: 'none', outline: 'none', boxShadow: 'none', margin: 0, padding: 0 }}
                   />
                 ) : (
                   <iframe
                     ref={heroIframeRef}
                     src={`${videoData.videoUrl}${videoData.videoUrl.includes('?') ? '&' : '?'}controls=false&autoplay=true&loop=true&muted=true`}
                     title="Home Background Video Player"
-                    className="w-full h-full border-0 absolute inset-0 pointer-events-none bg-transparent scale-105"
+                    className="w-full h-full border-0 absolute inset-0 bg-transparent m-0 p-0 pointer-events-none"
+                    style={{ width: '100%', height: '100%', aspectRatio: '9/16', border: 'none', outline: 'none', boxShadow: 'none', margin: 0, padding: 0 }}
                     loading="lazy"
                     allow="accelerometer; autoplay; encrypted-media; picture-in-picture;"
                   />
