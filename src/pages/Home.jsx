@@ -398,7 +398,7 @@ export default function Home() {
             >
               {isVideoLoading ? (
                 <div className="flex flex-col items-center justify-center gap-2 text-slate-400">
-                  <span className="text-[11px] font-medium">Loading video player...</span>
+                  <span className="text-[11px] font-medium"></span>
                 </div>
               ) : videoData?.videoUrl ? (
                 isDirectVideoFile(videoData.videoUrl) ? (
