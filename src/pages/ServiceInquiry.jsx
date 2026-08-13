@@ -274,13 +274,12 @@ export default function ServiceInquiry() {
           {/* Footer Link */}
           <div className="pt-2 text-center text-xs text-slate-600 font-medium">
             Need immediate support?{' '}
-            <button
-              type="button"
-              onClick={() => window.dispatchEvent(new CustomEvent('open-contact-modal'))}
+            <Link
+              to="/contact"
               className="text-teal-800 font-extrabold hover:underline"
             >
               Contact Us
-            </button>
+            </Link>
           </div>
 
         </div>

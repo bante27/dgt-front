@@ -16,6 +16,7 @@ import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import Portfolio from './pages/Portfolio';
 import ServiceInquiry from './pages/ServiceInquiry';
+import Contact from './pages/Contact';
 import PaymentVerify from './pages/PaymentVerify';
 
 export default function App() {
@@ -54,6 +55,7 @@ export default function App() {
               <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/portfolio" element={<Portfolio />} />
               <Route path="/services" element={<ServiceInquiry />} />
+              <Route path="/contact" element={<Contact />} />
               <Route path="/payment-verify/:tx_ref" element={<PaymentVerify />} />
               <Route path="/checkout/success" element={<PaymentVerify />} />
             </Routes>
