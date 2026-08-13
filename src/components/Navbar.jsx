@@ -155,7 +155,7 @@ export default function Navbar() {
         </div>
 
         {/* Tier 2: Light Navigation Bar Without Bottom Border Line */}
-        <div className="bg-[#e4f8f8] w-full shadow-sm">
+        <div className="hidden md:block bg-[#e4f8f8] w-full shadow-sm">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
             <nav className="py-2.5">
               <div className="flex items-center justify-center space-x-10 w-full overflow-x-auto">
