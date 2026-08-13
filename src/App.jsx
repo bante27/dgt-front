@@ -4,6 +4,7 @@ import { RefreshCw } from 'lucide-react';
 import { AuthProvider } from './context/AuthContext';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
+import CookieConsentBanner from './components/CookieConsentBanner';
 
 import Home from './pages/Home';
 import Courses from './pages/Courses';
@@ -67,6 +68,7 @@ export default function App() {
             </Routes>
           </main>
           <Footer />
+          <CookieConsentBanner />
         </div>
       </Router>
     </AuthProvider>
