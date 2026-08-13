@@ -12,6 +12,26 @@
   }
 }
 
+/* Responsive UI Utilities for Large PC & Mobile Proportionality */
+@media (min-width: 1280px) {
+  .max-w-7xl {
+    max-width: 1440px !important;
+  }
+}
+
+@media (min-width: 1536px) {
+  .max-w-7xl {
+    max-width: 1680px !important;
+  }
+}
+
+.responsive-icon {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
 /* Glass effect */
 .glass {
   background: rgba(18, 18, 22, 0.7);
