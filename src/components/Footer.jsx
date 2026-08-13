@@ -130,9 +130,9 @@ export default function Footer() {
                 <div>
                   <h3 className="text-slate-900 font-extrabold mb-2 text-[10px] uppercase tracking-widest">Support</h3>
                   <ul className="space-y-1.5 text-xs font-medium">
-                    <li><a href="#help" className="text-slate-600 hover:text-[#001FD1] transition-colors">Help Center</a></li>
-                    <li><a href="#terms" className="text-slate-600 hover:text-[#001FD1] transition-colors">Terms of Service</a></li>
-                    <li><a href="#privacy" className="text-slate-600 hover:text-[#001FD1] transition-colors">Privacy Policy</a></li>
+                    <li><Link to="/about" className="text-slate-600 hover:text-[#001FD1] transition-colors">About Us</Link></li>
+                    <li><Link to="/terms" className="text-slate-600 hover:text-[#001FD1] transition-colors">Terms of Service</Link></li>
+                    <li><Link to="/privacy" className="text-slate-600 hover:text-[#001FD1] transition-colors">Privacy Policy</Link></li>
                     <li>
                       <button
                         onClick={() => setIsContactOpen(true)}
