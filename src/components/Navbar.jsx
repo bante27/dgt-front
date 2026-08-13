@@ -4,7 +4,7 @@ import { User, LogOut, Menu, X, Home, Send, MessageCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 // Vector Logo component using public image file
-function Logo({ className = "w-14 h-14 object-contain" }) {
+function Logo({ className = "w-14 h-7 object-contain" }) {
   return (
     <img 
       src="/Logo.png" 
