@@ -101,7 +101,7 @@ export default function Navbar() {
                 {/* Header Social Links */}
                 <div className="hidden sm:flex items-center space-x-2 border-l border-white/20 pl-6">
                   <a
-                    href="https://t.me/hailepp"
+                    href="https://t.me/wubante"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white/15 text-white hover:bg-white/25 border border-white/20 text-[11px] font-bold transition-all shadow-sm"
@@ -111,7 +111,7 @@ export default function Navbar() {
                     <span>Telegram</span>
                   </a>
                   <a
-                    href="https://wa.me/0978168825"
+                    href="https://wa.me/251927993894"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white/15 text-white hover:bg-white/25 border border-white/20 text-[11px] font-bold transition-all shadow-sm"
@@ -205,7 +205,7 @@ export default function Navbar() {
       </header>
 
       {/* Header spacer for fixed positioning */}
-      <div className="h-14 md:h-[104px]" aria-hidden="true" />
+      <div className="h-14 md:h-[104px] bg-white" aria-hidden="true" />
 
       {/* ===== MOBILE DROPDOWN ===== */}
       {isOpen && (

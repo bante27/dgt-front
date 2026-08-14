@@ -134,8 +134,7 @@ export default function Register() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans flex flex-col md:flex-row pt-0">
-      
+    <div className="relative -mt-4 min-h-screen m-0 p-0 bg-slate-50 text-slate-900 font-sans flex flex-col md:flex-row">
       {/* Left Branding Panel */}
       <div 
         className="hidden md:flex md:w-5/12 p-6 sm:p-8 md:p-12 flex-col justify-between items-center min-h-[420px] md:min-h-screen relative overflow-hidden md:sticky md:top-0 md:h-screen border-r border-slate-200/60"
