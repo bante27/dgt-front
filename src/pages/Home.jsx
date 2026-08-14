@@ -323,7 +323,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans selection:bg-[#28E7D3] selection:text-[#041F1C] text-xs overflow-x-hidden relative">
+    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans selection:bg-[#28E7D3] selection:text-[#041F1C] text-xs overflow-x-hidden relative -mt-14 md:-mt-[104px]">
       
       {/* Light Mesh Radar Grid Background */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
@@ -331,7 +331,7 @@ export default function Home() {
       </div>
 
       {/* Hero Section: Side-by-Side Layout */}
-      <section className="pt-2 sm:pt-4 pb-12 sm:pb-20 px-4 sm:px-8 lg:px-16 max-w-7xl mx-auto relative z-10">
+      <section className="pt-24 sm:pt-28 pb-12 sm:pb-20 px-4 sm:px-8 lg:px-16 max-w-7xl mx-auto relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
           
           {/* Left Column: Header Text & CTA */}
