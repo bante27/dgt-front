@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { 
-  Video, BookOpen, Award, Users, CheckCircle2, ArrowRight, 
+  Video, BookOpen, Award, Users, CheckCircle2, 
   Play, ShieldCheck, Zap, Globe, Sparkles, TrendingUp, 
   Laptop, GraduationCap 
 } from 'lucide-react';
@@ -124,7 +124,7 @@ export default function About() {
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 font-sans text-[12px]">
       
-      {/* 1. HERO SECTION (Compact, simple words for video editors, keeping background image) */}
+      {/* 1. HERO SECTION */}
       <div className="relative py-12 sm:py-16 px-4 sm:px-6 lg:px-8 text-white overflow-hidden bg-slate-900">
         <div className="absolute inset-0 z-0">
           <img 
@@ -136,8 +136,7 @@ export default function About() {
         </div>
         
         <div className="max-w-4xl mx-auto text-center relative z-10 space-y-4">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/40 border border-white/30 text-amber-300 text-[11px] font-extrabold uppercase tracking-widest backdrop-blur-md shadow-md">
-            <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+          <div className="inline-flex items-center px-3 py-1 rounded-full bg-black/40 border border-white/30 text-amber-300 text-[11px] font-extrabold uppercase tracking-widest backdrop-blur-md shadow-md">
             <span>Video Editing & Learning Hub</span>
           </div>
 
@@ -152,10 +151,9 @@ export default function About() {
           <div className="flex flex-wrap justify-center gap-3 pt-2">
             <Link
               to="/courses"
-              className="px-5 py-2.5 rounded-xl bg-[#001FD1] hover:bg-blue-700 text-white font-black text-[12px] uppercase tracking-wider shadow-md flex items-center gap-1.5 transition-all"
+              className="px-5 py-2.5 rounded-xl bg-[#001FD1] hover:bg-blue-700 text-white font-black text-[12px] uppercase tracking-wider shadow-md transition-all"
             >
-              <span>Explore Courses</span>
-              <ArrowRight className="w-3.5 h-3.5 text-amber-300" />
+              Explore Courses
             </Link>
             <Link
               to="/register"
@@ -171,7 +169,7 @@ export default function About() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
           <div className="space-y-4">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 text-[#001FD1] text-[11px] font-bold uppercase tracking-wider">
+            <div className="inline-flex items-center px-3 py-1 rounded-full bg-blue-50 text-[#001FD1] text-[11px] font-bold uppercase tracking-wider">
               Who We Are
             </div>
             <h2 className="text-xl sm:text-3xl font-black text-slate-900 tracking-tight leading-tight">
@@ -239,9 +237,8 @@ export default function About() {
 
               <div className="pt-3 border-t border-white/10 flex items-center justify-between text-[12px]">
                 <span className="text-slate-300">Ready to edit better?</span>
-                <Link to="/courses" className="text-amber-400 font-extrabold hover:underline flex items-center gap-1">
-                  <span>View Courses</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
+                <Link to="/courses" className="text-amber-400 font-extrabold hover:underline">
+                  View Courses
                 </Link>
               </div>
             </div>
@@ -253,7 +250,7 @@ export default function About() {
       <div className="bg-white py-12 sm:py-16 border-y border-slate-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
           <div className="text-center max-w-2xl mx-auto space-y-2">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 text-[#001FD1] text-[11px] font-bold uppercase tracking-wider">
+            <div className="inline-flex items-center px-3 py-1 rounded-full bg-blue-50 text-[#001FD1] text-[11px] font-bold uppercase tracking-wider">
               What We Offer
             </div>
             <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
@@ -286,7 +283,7 @@ export default function About() {
       {/* 4. WHY CHOOSE US */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 space-y-10">
         <div className="text-center max-w-2xl mx-auto space-y-2">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-[11px] font-bold uppercase tracking-wider">
+          <div className="inline-flex items-center px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-[11px] font-bold uppercase tracking-wider">
             Why Choose Us
           </div>
           <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
@@ -319,7 +316,7 @@ export default function About() {
       <div className="bg-[#0B1D3A] text-white py-12 sm:py-16 relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-10">
           <div className="text-center max-w-2xl mx-auto space-y-2">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 text-amber-300 text-[11px] font-bold uppercase tracking-wider backdrop-blur-md">
+            <div className="inline-flex items-center px-3 py-1 rounded-full bg-white/10 text-amber-300 text-[11px] font-bold uppercase tracking-wider backdrop-blur-md">
               Simple 4-Step Process
             </div>
             <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight">
@@ -350,10 +347,9 @@ export default function About() {
           <div className="text-center pt-2">
             <Link
               to="/register"
-              className="px-6 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-500 text-slate-900 font-black text-[12px] uppercase tracking-wider shadow-md inline-flex items-center gap-1.5 transition-all"
+              className="px-6 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-500 text-slate-900 font-black text-[12px] uppercase tracking-wider shadow-md transition-all"
             >
-              <span>Get Started Now</span>
-              <ArrowRight className="w-3.5 h-3.5" />
+              Get Started Now
             </Link>
           </div>
         </div>
@@ -363,7 +359,7 @@ export default function About() {
       <div className="bg-white py-12 sm:py-16 border-t border-slate-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
           <div className="text-center max-w-2xl mx-auto space-y-2">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 text-[#001FD1] text-[11px] font-bold uppercase tracking-wider">
+            <div className="inline-flex items-center px-3 py-1 rounded-full bg-blue-50 text-[#001FD1] text-[11px] font-bold uppercase tracking-wider">
               Expert Mentors
             </div>
             <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
@@ -407,7 +403,7 @@ export default function About() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
         <div className="bg-gradient-to-r from-[#0B1D3A] to-[#142f56] rounded-3xl p-6 sm:p-10 text-white shadow-xl relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="space-y-3 max-w-xl relative z-10">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 text-amber-300 text-[11px] font-bold uppercase tracking-wider">
+            <div className="inline-flex items-center px-3 py-1 rounded-full bg-white/10 text-amber-300 text-[11px] font-bold uppercase tracking-wider">
               Our Core Mission
             </div>
             <h2 className="text-xl sm:text-3xl font-black tracking-tight leading-tight">
@@ -421,10 +417,9 @@ export default function About() {
           <div className="relative z-10 shrink-0">
             <Link
               to="/courses"
-              className="px-5 py-3 rounded-xl bg-white text-[#0B1D3A] hover:bg-slate-100 font-black text-[12px] uppercase tracking-wider shadow-lg inline-flex items-center gap-1.5 transition-all"
+              className="px-5 py-3 rounded-xl bg-white text-[#0B1D3A] hover:bg-slate-100 font-black text-[12px] uppercase tracking-wider shadow-xl transition-all"
             >
-              <span>Explore Courses</span>
-              <ArrowRight className="w-3.5 h-3.5 text-[#001FD1]" />
+              Explore Courses
             </Link>
           </div>
         </div>
@@ -442,10 +437,9 @@ export default function About() {
           <div className="pt-2">
             <Link
               to="/courses"
-              className="px-6 py-3 rounded-xl bg-[#001FD1] hover:bg-blue-700 text-white font-black text-[12px] uppercase tracking-wider shadow-md inline-flex items-center gap-1.5 transition-all"
+              className="px-6 py-3 rounded-xl bg-[#001FD1] hover:bg-blue-700 text-white font-black text-[12px] uppercase tracking-wider shadow-md transition-all"
             >
-              <span>Explore Courses</span>
-              <ArrowRight className="w-3.5 h-3.5 text-amber-300" />
+              Explore Courses
             </Link>
           </div>
         </div>
