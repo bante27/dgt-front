@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { User, LogOut, Menu, X, Home, Send, MessageCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
@@ -19,26 +19,41 @@ export default function Navbar() {
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const [showNavbar, setShowNavbar] = useState(true);
-  const [lastScrollY, setLastScrollY] = useState(0);
+  const lastScrollYRef = useRef(0);
   const [showScrollButton, setShowScrollButton] = useState(false);
 
   useEffect(() => {
+    let scrollTimeout = null;
+
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
 
-      if (currentScrollY > lastScrollY && currentScrollY > 80) {
+      if (currentScrollY <= 80) {
+        setShowNavbar(true);
+      } else if (currentScrollY > lastScrollYRef.current) {
         setShowNavbar(false);
       } else {
         setShowNavbar(true);
       }
 
-      setLastScrollY(currentScrollY);
+      lastScrollYRef.current = currentScrollY;
       setShowScrollButton(currentScrollY > 300);
+
+      if (scrollTimeout) {
+        clearTimeout(scrollTimeout);
+      }
+
+      scrollTimeout = setTimeout(() => {
+        setShowNavbar(true);
+      }, 150);
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [lastScrollY]);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      if (scrollTimeout) clearTimeout(scrollTimeout);
+    };
+  }, []);
 
   const handleLogout = () => {
     logout();
@@ -53,9 +68,9 @@ export default function Navbar() {
 
   return (
     <>
-      {/* ===== HEADER: Smart Scroll Hide/Show Sticky 2-Tier Banner ===== */}
-      <header className={`sticky z-50 w-full transition-all duration-300 ${
-        showNavbar ? 'top-0' : '-top-36'
+      {/* ===== HEADER: Smart Scroll Hide/Show Fixed 2-Tier Banner ===== */}
+      <header className={`fixed top-0 left-0 right-0 z-50 w-full transition-transform duration-300 ${
+        showNavbar ? 'translate-y-0' : '-translate-y-full'
       }`}>
         {/* Tier 1: Mixed Blue & White Top Banner */}
         <div 
