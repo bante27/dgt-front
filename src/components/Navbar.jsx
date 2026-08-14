@@ -204,6 +204,9 @@ export default function Navbar() {
         </div>
       </header>
 
+      {/* Header spacer for fixed positioning */}
+      <div className="h-14 md:h-[104px]" aria-hidden="true" />
+
       {/* ===== MOBILE DROPDOWN ===== */}
       {isOpen && (
         <div className="md:hidden fixed top-24 left-3 right-3 z-50 bg-[#0A192F] border border-white/15 px-5 pt-4 pb-6 space-y-3 rounded-2xl shadow-2xl backdrop-blur-2xl animate-fade-in text-white">
