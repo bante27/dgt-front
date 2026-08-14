@@ -18,14 +18,15 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { authAPI, courseAPI } from '../services/api';
+import { authAPI, courseAPI, assetAPI } from '../services/api';
 
 export default function Dashboard() {
-  const { user } = useAuth();
+  const { user, refreshProfile } = useAuth();
   const navigate = useNavigate();
 
   const [profile, setProfile] = useState(null);
   const [allCourses, setAllCourses] = useState([]);
+  const [allAssets, setAllAssets] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
 
   const [firstName, setFirstName] = useState('');
@@ -44,9 +45,10 @@ export default function Dashboard() {
 
     const fetchDashboardData = async () => {
       try {
-        const [profileRes, coursesRes] = await Promise.all([
+        const [profileRes, coursesRes, assetsRes] = await Promise.all([
           authAPI.getProfile().catch(() => ({ data: user })),
-          courseAPI.getCourses().catch(() => ({ data: [] }))
+          courseAPI.getCourses().catch(() => ({ data: [] })),
+          assetAPI.getAssets().catch(() => ({ data: [] }))
         ]);
 
         if (!isMounted) return;
@@ -59,6 +61,7 @@ export default function Dashboard() {
         setImagePreview(profileData.profileImage || '');
 
         setAllCourses(coursesRes.data || []);
+        setAllAssets(assetsRes.data?.assets || assetsRes.data || []);
       } catch (err) {
         if (!isMounted) return;
         console.error('Failed to load dashboard profile:', err);
@@ -112,6 +115,10 @@ export default function Dashboard() {
       setImageFile(null);
       setIsEditing(false);
       setMessage('Profile updated successfully!');
+
+      if (refreshProfile) {
+        await refreshProfile();
+      }
     } catch (err) {
       console.error('Failed to update profile', err);
       setError(err.response?.data?.message || 'Failed to update profile.');
@@ -124,7 +131,9 @@ export default function Dashboard() {
     ? `${profile.firstName || ''} ${profile.lastName || ''}`.trim() || profile.name || 'Student'
     : 'Student';
 
-  const enrolledCount = profile?.enrolledCourses?.length || allCourses.length || 2;
+  const enrolledCount = profile?.enrolledCourses?.length || 0;
+  const downloadCount = profile?.downloadedAssets?.length || profile?.downloads?.length || allAssets.length || 0;
+  const watchTimeHours = profile?.watchTime || (enrolledCount * 12) || 0;
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800 font-sans pb-16 text-xs">
@@ -295,7 +304,7 @@ export default function Dashboard() {
         )}
 
         {/* 1. KEY METRICS GRID */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           
           <div className="bg-white rounded-2xl p-4 border border-indigo-100 shadow-sm flex items-center justify-between">
             <div>
@@ -310,7 +319,7 @@ export default function Dashboard() {
           <div className="bg-white rounded-2xl p-4 border border-indigo-100 shadow-sm flex items-center justify-between">
             <div>
               <p className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Asset Downloads</p>
-              <p className="text-lg font-black text-slate-900 mt-0.5">12 Items</p>
+              <p className="text-lg font-black text-slate-900 mt-0.5">{downloadCount} Items</p>
             </div>
             <div className="p-3 rounded-xl bg-amber-400/15 text-amber-600">
               <Layers className="w-5 h-5" />
@@ -320,20 +329,10 @@ export default function Dashboard() {
           <div className="bg-white rounded-2xl p-4 border border-indigo-100 shadow-sm flex items-center justify-between">
             <div>
               <p className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Watch Time</p>
-              <p className="text-lg font-black text-slate-900 mt-0.5">26 Hours</p>
+              <p className="text-lg font-black text-slate-900 mt-0.5">{watchTimeHours} Hours</p>
             </div>
             <div className="p-3 rounded-xl bg-[#6B7CFF]/10 text-[#6B7CFF]">
               <Video className="w-5 h-5" />
-            </div>
-          </div>
-
-          <div className="bg-white rounded-2xl p-4 border border-indigo-100 shadow-sm flex items-center justify-between">
-            <div>
-              <p className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Certificates</p>
-              <p className="text-lg font-black text-slate-900 mt-0.5">2 Earned</p>
-            </div>
-            <div className="p-3 rounded-xl bg-emerald-500/10 text-emerald-600">
-              <ShieldCheck className="w-5 h-5" />
             </div>
           </div>
 
@@ -354,49 +353,44 @@ export default function Dashboard() {
               </button>
             </div>
 
-            {/* Course Card 1 */}
-            <div className="p-3.5 rounded-xl border border-slate-100 bg-slate-50/50 hover:bg-white hover:border-[#6B7CFF]/40 transition-all space-y-2.5">
-              <div className="flex items-center justify-between">
-                <span className="text-[9px] font-black uppercase bg-[#6B7CFF]/10 text-[#6B7CFF] px-2 py-0.5 rounded">
-                  Web Development
-                </span>
-                <span className="text-[11px] font-bold text-slate-400 flex items-center gap-1">
-                  <Clock className="w-3 h-3 text-[#6B7CFF]" /> 75% Completed
-                </span>
-              </div>
-              <h3 className="font-extrabold text-slate-900 text-xs">Full-Stack React & Node.js Masterclass</h3>
-              <div className="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
-                <div className="bg-[#6B7CFF] h-full rounded-full" style={{ width: '75%' }}></div>
-              </div>
-              <div className="flex items-center justify-between pt-0.5">
-                <span className="text-[11px] text-slate-500 font-medium">Next: Module 4 - RESTful API Design</span>
-                <button onClick={() => navigate('/courses')} className="flex items-center gap-1 text-[11px] font-black text-[#6B7CFF] hover:text-indigo-800">
-                  Continue <ArrowRight className="w-3 h-3" />
+            {profile?.enrolledCourses && profile.enrolledCourses.length > 0 ? (
+              profile.enrolledCourses.map((course, idx) => {
+                const courseObj = typeof course === 'object' && course !== null ? course : allCourses.find(c => c._id === course || c.id === course);
+                if (!courseObj) return null;
+                return (
+                  <div key={courseObj._id || courseObj.id || idx} className="p-3.5 rounded-xl border border-slate-100 bg-slate-50/50 hover:bg-white hover:border-[#6B7CFF]/40 transition-all space-y-2.5">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[9px] font-black uppercase bg-[#6B7CFF]/10 text-[#6B7CFF] px-2 py-0.5 rounded">
+                        {courseObj.category || 'Course'}
+                      </span>
+                      <span className="text-[11px] font-bold text-slate-400 flex items-center gap-1">
+                        <Clock className="w-3 h-3 text-[#6B7CFF]" /> {courseObj.progress || '0%'} Completed
+                      </span>
+                    </div>
+                    <h3 className="font-extrabold text-slate-900 text-xs">{courseObj.title}</h3>
+                    <div className="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
+                      <div className="bg-[#6B7CFF] h-full rounded-full" style={{ width: courseObj.progress || '0%' }}></div>
+                    </div>
+                    <div className="flex items-center justify-between pt-0.5">
+                      <span className="text-[11px] text-slate-500 font-medium">{courseObj.subtitle || courseObj.description || 'Continue learning'}</span>
+                      <button onClick={() => navigate(`/courses/${courseObj._id || courseObj.id}`)} className="flex items-center gap-1 text-[11px] font-black text-[#6B7CFF] hover:text-indigo-800">
+                        Continue <ArrowRight className="w-3 h-3" />
+                      </button>
+                    </div>
+                  </div>
+                );
+              })
+            ) : (
+              <div className="text-center py-8 space-y-3">
+                <p className="text-slate-500 text-xs font-medium">You are not enrolled in any courses yet.</p>
+                <button 
+                  onClick={() => navigate('/courses')}
+                  className="px-4 py-2 bg-[#6B7CFF] text-white rounded-xl text-xs font-bold hover:bg-indigo-600 transition-all"
+                >
+                  Explore Courses
                 </button>
               </div>
-            </div>
-
-            {/* Course Card 2 */}
-            <div className="p-3.5 rounded-xl border border-slate-100 bg-slate-50/50 hover:bg-white hover:border-[#6B7CFF]/40 transition-all space-y-2.5">
-              <div className="flex items-center justify-between">
-                <span className="text-[9px] font-black uppercase bg-amber-400/15 text-amber-700 px-2 py-0.5 rounded">
-                  UI/UX Design
-                </span>
-                <span className="text-[11px] font-bold text-slate-400 flex items-center gap-1">
-                  <Clock className="w-3 h-3 text-[#6B7CFF]" /> 30% Completed
-                </span>
-              </div>
-              <h3 className="font-extrabold text-slate-900 text-xs">Figma Architecture & Prototyping Systems</h3>
-              <div className="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
-                <div className="bg-amber-400 h-full rounded-full" style={{ width: '30%' }}></div>
-              </div>
-              <div className="flex items-center justify-between pt-0.5">
-                <span className="text-[11px] text-slate-500 font-medium">Next: Section 2 - Responsive Grid Systems</span>
-                <button onClick={() => navigate('/courses')} className="flex items-center gap-1 text-[11px] font-black text-[#6B7CFF] hover:text-indigo-800">
-                  Continue <ArrowRight className="w-3 h-3" />
-                </button>
-              </div>
-            </div>
+            )}
 
           </div>
 

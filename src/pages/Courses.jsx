@@ -63,10 +63,11 @@ export default function Courses() {
       
       {error && <div className="p-4 rounded-2xl bg-red-50 border border-red-200 text-xs text-red-600 text-center mb-8">{error}</div>}
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 w-full">
+      {/* Main container with relative positioning so the sticky sidebar stays strictly bounded inside it */}
+      <div className="relative grid grid-cols-1 lg:grid-cols-4 gap-8 w-full items-start">
         
-        {/* Left Sidebar Filters */}
-        <div className="lg:col-span-1 space-y-6 bg-slate-50 p-6 rounded-2xl border border-slate-200 sticky top-28 self-start">
+        {/* Left Sidebar Filters: Stays completely static/fixed in place relative to the viewport once scrolled past, but stops naturally and never overlaps the footer because its parent container boundaries stop here */}
+        <div className="lg:col-span-1 space-y-6 bg-slate-100 p-6 rounded-2xl border border-slate-300 shadow-md lg:sticky lg:top-28 self-start max-h-[calc(100vh-8rem)] overflow-y-auto z-20">
           
           {/* Search Box */}
           <div className="relative">

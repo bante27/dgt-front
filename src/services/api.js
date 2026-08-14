@@ -31,7 +31,11 @@ export const authAPI = {
   login: (credentials) => api.post('/auth/login', credentials),
   googleAuth: (token) => api.post('/auth/google', { token }),
   getProfile: () => api.get('/auth/profile'),
-  updateProfile: (formData) => api.put('/auth/profile', formData),
+  updateProfile: (formData) => api.put('/auth/profile', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  }),
   forgotPassword: (data) => api.post('/auth/forgot-password', data),
   resetPassword: (data) => api.post('/auth/reset-password', data),
 };

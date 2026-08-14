@@ -258,7 +258,7 @@ export default function AssetHub() {
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 w-full max-w-7xl mx-auto">
         {/* Left Sidebar Filters */}
-        <div className="lg:col-span-1 space-y-4 bg-slate-50 p-4 rounded-xl border border-slate-200 sticky top-24 self-start text-[10px]">
+        <div className="lg:col-span-1 space-y-4 bg-slate-100 p-4 rounded-xl border border-slate-300 shadow-md sticky top-28 self-start text-[10px]">
           <div className="relative">
             <Search className="absolute left-3 top-2.5 w-3.5 h-3.5 text-slate-400" />
             <input
