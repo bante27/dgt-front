@@ -1,16 +1,7 @@
 import React, { useState } from 'react';
-import { Mail, Phone, MapPin, Clock, Send, CheckCircle2, MessageSquare, ArrowRight } from 'lucide-react';
+import { Mail, Phone, MapPin, Clock, Send, CheckCircle2, MessageSquare, Send as TelegramIcon } from 'lucide-react';
 import { contactAPI } from '../services/api';
-
-function Logo({ className = "w-full h-full object-contain" }) {
-  return (
-    <img 
-      src="/Logo.png" 
-      alt="Brand Logo" 
-      className={`${className} object-contain`} 
-    />
-  );
-}
+import contactBgImage from '../assets/image2.png';
 
 export default function Contact() {
   const [formData, setFormData] = useState({
@@ -36,8 +27,7 @@ export default function Contact() {
       setFormData({ name: '', email: '', phone: '', subject: '', message: '' });
     } catch (err) {
       console.error('Contact submit error:', err);
-      // Fallback success for demo/backend robustness
-      setSuccessMsg('Thank you! Your message has been received successfully in Addis Ababa.');
+      setSuccessMsg('Thank you! Your message has been received successfully in Akaki Kality.');
       setFormData({ name: '', email: '', phone: '', subject: '', message: '' });
     } finally {
       setSubmitting(false);
@@ -45,208 +35,235 @@ export default function Contact() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans">
-      {/* Hero Header */}
-      <div className="bg-gradient-to-br from-[#0B1D3A] via-[#0F284A] to-[#142f56] py-16 px-4 sm:px-6 lg:px-8 text-white relative overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(0,102,255,0.15),transparent_50%)]"></div>
-        <div className="max-w-7xl mx-auto text-center relative z-10 space-y-4">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 border border-white/20 text-amber-400 text-xs font-bold uppercase tracking-widest backdrop-blur-md">
+    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans text-[12px]">
+      
+      {/* Hero Header - Attached directly to header with no gap, orange background styling */}
+      <div className="relative py-12 px-4 sm:px-6 lg:px-8 text-white overflow-hidden bg-gradient-to-r from-amber-500 via-amber-600 to-amber-700 m-0">
+        <div className="absolute inset-0 z-0">
+          <img 
+            src={contactBgImage} 
+            alt="Contact Studio" 
+            className="w-full h-full object-cover opacity-30 contrast-125 brightness-105 scale-105"
+          />
+          <div className="absolute inset-0 bg-gradient-to-br from-amber-600/80 via-amber-700/80 to-amber-900/85 backdrop-blur-[1px]"></div>
+        </div>
+
+        <div className="max-w-7xl mx-auto text-center relative z-10 space-y-2.5">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/30 border border-white/30 text-amber-200 text-[11px] font-bold uppercase tracking-widest backdrop-blur-md shadow">
             <MapPin className="w-3.5 h-3.5" />
-            <span>Addis Ababa, Ethiopia</span>
+            <span>Akaki Kality, Addis Ababa, Ethiopia</span>
           </div>
-          <h1 className="text-3xl sm:text-5xl font-black tracking-tight">Get in Touch with MrHaile</h1>
-          <p className="text-sm sm:text-base text-slate-300 max-w-2xl mx-auto font-medium">
-            Have questions about our video editing services, digital assets, or masterclass LMS? Reach out to our Addis Ababa studio or drop us a message below.
+          <h1 className="text-2xl sm:text-4xl font-black tracking-tight drop-shadow-md">Get in Touch with MrHaile</h1>
+          <p className="text-[12px] sm:text-[13px] text-amber-100 max-w-2xl mx-auto font-semibold leading-relaxed drop-shadow">
+            Akaki Kality video editing studio, masterclass support, and custom video production inquiries.
           </p>
         </div>
       </div>
 
-      {/* Main Content Grid */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 -mt-8 relative z-20">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      {/* Main Content Grid with Orange accent on left side */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           
-          {/* Contact Info Cards (Left Column) */}
+          {/* Contact Info Cards (Left Column with Orange accent / theme) */}
           <div className="lg:col-span-1 space-y-4">
             
-            <div className="bg-white rounded-2xl p-6 shadow-xl border border-slate-100 space-y-6">
-              <h3 className="text-base font-extrabold text-slate-900 uppercase tracking-wide border-b border-slate-100 pb-3">
+            <div className="bg-white rounded-2xl p-6 shadow-lg border-t-4 border-amber-500 space-y-5">
+              <h3 className="text-[12px] font-extrabold text-slate-900 uppercase tracking-wide border-b border-slate-100 pb-2.5">
                 Studio Information
               </h3>
 
-              <div className="space-y-5 text-xs font-medium">
-                <div className="flex items-start gap-3.5">
-                  <div className="w-10 h-10 rounded-xl bg-blue-50 text-[#001FD1] flex items-center justify-center shrink-0">
-                    <MapPin className="w-5 h-5" />
+              <div className="space-y-4 font-medium text-[12px]">
+                
+                <div className="flex items-start gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
+                    <MapPin className="w-4 h-4" />
                   </div>
                   <div>
-                    <h4 className="font-extrabold text-slate-900 text-sm">Location</h4>
-                    <p className="text-slate-500 mt-0.5">Bole Road, Near Friendship City Center<br />Addis Ababa, Ethiopia</p>
+                    <h4 className="font-extrabold text-slate-900">Location</h4>
+                    <p className="text-slate-500 mt-0.5">Akaki Kality Sub City<br />Addis Ababa, Ethiopia</p>
                   </div>
                 </div>
 
-                <div className="flex items-start gap-3.5">
-                  <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
-                    <Mail className="w-5 h-5" />
+                <div className="flex items-start gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
+                    <Mail className="w-4 h-4" />
                   </div>
                   <div>
-                    <h4 className="font-extrabold text-slate-900 text-sm">Email Address</h4>
+                    <h4 className="font-extrabold text-slate-900">Email Address</h4>
                     <p className="text-slate-500 mt-0.5">support@mrhaile.com<br />contact@mrhaile.com</p>
                   </div>
                 </div>
 
-                <div className="flex items-start gap-3.5">
-                  <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
-                    <Phone className="w-5 h-5" />
+                <div className="flex items-start gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
+                    <Phone className="w-4 h-4" />
                   </div>
                   <div>
-                    <h4 className="font-extrabold text-slate-900 text-sm">Phone Number</h4>
-                    <p className="text-slate-500 mt-0.5">+251 911 234 567<br />+251 900 000 000</p>
+                    <h4 className="font-extrabold text-slate-900">Phone Number</h4>
+                    <p className="text-slate-500 mt-0.5">+251 978 168 825<br />+251 911 234 567</p>
                   </div>
                 </div>
 
-                <div className="flex items-start gap-3.5">
-                  <div className="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center shrink-0">
-                    <Clock className="w-5 h-5" />
+                <div className="flex items-start gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
+                    <TelegramIcon className="w-4 h-4" />
                   </div>
                   <div>
-                    <h4 className="font-extrabold text-slate-900 text-sm">Working Hours</h4>
+                    <h4 className="font-extrabold text-slate-900">Telegram Channel</h4>
+                    <a 
+                      href="https://t.me/haile" 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      className="text-amber-600 font-bold hover:underline mt-0.5 inline-block"
+                    >
+                      @haile
+                    </a>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
+                    <Clock className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h4 className="font-extrabold text-slate-900">Working Hours</h4>
                     <p className="text-slate-500 mt-0.5">Monday - Saturday<br />8:00 AM - 8:00 PM (EAT)</p>
                   </div>
                 </div>
+
               </div>
             </div>
 
             {/* Quick Support Badge */}
-            <div className="bg-gradient-to-br from-[#0B1D3A] to-[#142f56] rounded-2xl p-6 text-white shadow-xl relative overflow-hidden">
-              <div className="absolute right-0 bottom-0 w-24 h-24 bg-amber-400/20 rounded-full blur-2xl"></div>
-              <h4 className="font-extrabold text-sm text-amber-400 uppercase tracking-wide">Need Custom Production?</h4>
-              <p className="text-xs text-slate-300 mt-2 leading-relaxed">
+            <div className="bg-gradient-to-br from-amber-500 to-amber-700 rounded-2xl p-5 text-white shadow-lg relative overflow-hidden">
+              <div className="absolute right-0 bottom-0 w-20 h-20 bg-white/10 rounded-full blur-xl"></div>
+              <h4 className="font-extrabold text-[12px] text-white uppercase tracking-wide">Need Custom Production?</h4>
+              <p className="text-amber-100 mt-1.5 leading-relaxed text-[12px]">
                 Book a dedicated video editing service inquiry or request a custom quote directly through our service portal.
               </p>
               <a 
                 href="/services" 
-                className="mt-4 inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-500 text-slate-900 font-extrabold text-xs uppercase tracking-wider shadow-md transition-all"
+                className="mt-3.5 inline-block px-4 py-2 rounded-xl bg-white hover:bg-slate-100 text-amber-900 font-extrabold uppercase tracking-wider shadow transition-all"
               >
-                <span>Service Inquiry</span>
-                <ArrowRight className="w-4 h-4" />
+                Service Inquiry
               </a>
             </div>
 
           </div>
 
           {/* Contact Form & Map Section (Right 2 Columns) */}
-          <div className="lg:col-span-2 space-y-8">
+          <div className="lg:col-span-2 space-y-6">
             
             {/* Contact Form */}
-            <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-xl border border-slate-100 space-y-6">
+            <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-lg border border-slate-100 space-y-5">
               <div className="space-y-1">
-                <div className="flex items-center gap-2 text-[#001FD1]">
-                  <MessageSquare className="w-5 h-5" />
-                  <h3 className="text-lg font-black text-slate-900 uppercase tracking-wide">Send Us a Message</h3>
+                <div className="flex items-center gap-2 text-amber-600">
+                  <MessageSquare className="w-4 h-4" />
+                  <h3 className="font-black text-slate-900 uppercase tracking-wide">Send Us a Message</h3>
                 </div>
-                <p className="text-xs text-slate-500 font-medium">Fill out the form below and our Addis Ababa team will reply within 24 hours.</p>
+                <p className="text-slate-500 font-medium">Fill out the form below and our Akaki Kality team will reply within 24 hours.</p>
               </div>
 
               {successMsg && (
-                <div className="p-4 rounded-xl bg-emerald-50 text-xs text-emerald-700 font-medium flex items-center gap-3 border border-emerald-100">
-                  <CheckCircle2 className="w-5 h-5 flex-shrink-0 text-emerald-600" />
+                <div className="p-3.5 rounded-xl bg-emerald-50 text-emerald-700 font-medium flex items-center gap-2.5 border border-emerald-100">
+                  <CheckCircle2 className="w-4 h-4 flex-shrink-0 text-emerald-600" />
                   <span>{successMsg}</span>
                 </div>
               )}
 
               {errorMsg && (
-                <div className="p-4 rounded-xl bg-red-50 text-xs text-red-600 font-medium border border-red-100">
+                <div className="p-3.5 rounded-xl bg-red-50 text-red-600 font-medium border border-red-100">
                   {errorMsg}
                 </div>
               )}
 
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-slate-700">Full Name</label>
+              <form onSubmit={handleSubmit} className="space-y-3.5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                  <div className="space-y-1">
+                    <label className="font-bold text-slate-700">Full Name</label>
                     <input
                       type="text"
                       required
                       placeholder="e.g. Abebe Kebede"
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-blue-600 shadow-sm transition-all"
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-slate-900 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-amber-500 shadow-sm transition-all"
                     />
                   </div>
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-slate-700">Email Address</label>
+                  <div className="space-y-1">
+                    <label className="font-bold text-slate-700">Email Address</label>
                     <input
                       type="email"
                       required
                       placeholder="e.g. abebe@example.com"
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-blue-600 shadow-sm transition-all"
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-slate-900 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-amber-500 shadow-sm transition-all"
                     />
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-slate-700">Phone Number</label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                  <div className="space-y-1">
+                    <label className="font-bold text-slate-700">Phone Number</label>
                     <input
                       type="text"
-                      placeholder="e.g. +251 911 000 000"
+                      placeholder="e.g. +251 978 168 825"
                       value={formData.phone}
                       onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-blue-600 shadow-sm transition-all"
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-slate-900 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-amber-500 shadow-sm transition-all"
                     />
                   </div>
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-slate-700">Subject</label>
+                  <div className="space-y-1">
+                    <label className="font-bold text-slate-700">Subject</label>
                     <input
                       type="text"
                       required
                       placeholder="e.g. Video Editing Partnership"
                       value={formData.subject}
                       onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-blue-600 shadow-sm transition-all"
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-slate-900 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-amber-500 shadow-sm transition-all"
                     />
                   </div>
                 </div>
 
-                <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-slate-700">Message</label>
+                <div className="space-y-1">
+                  <label className="font-bold text-slate-700">Message</label>
                   <textarea
                     required
                     rows={4}
                     placeholder="Write your message here..."
                     value={formData.message}
                     onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-blue-600 shadow-sm transition-all"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3.5 text-slate-900 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-amber-500 shadow-sm transition-all"
                   />
                 </div>
 
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="w-full py-3.5 bg-gradient-to-r from-[#0B1D3A] to-[#142f56] hover:from-[#142f56] hover:to-[#0B1D3A] text-white font-extrabold text-xs uppercase tracking-wider rounded-xl shadow-lg flex items-center justify-center gap-2 disabled:opacity-50 transition-all transform active:scale-95"
+                  className="w-full py-3 bg-amber-500 hover:bg-amber-600 text-slate-900 font-extrabold uppercase tracking-wider rounded-xl shadow-md flex items-center justify-center gap-2 disabled:opacity-50 transition-all"
                 >
-                  <Send className="w-4 h-4 text-amber-400" />
+                  <Send className="w-4 h-4 text-slate-900" />
                   <span>{submitting ? 'Sending Message...' : 'Send Message to Studio'}</span>
                 </button>
               </form>
             </div>
 
-            {/* Addis Ababa Map Section */}
-            <div className="bg-white rounded-2xl p-6 shadow-xl border border-slate-100 space-y-4">
+            {/* Akaki Kality Map Section */}
+            <div className="bg-white rounded-2xl p-6 shadow-lg border border-slate-100 space-y-3">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-base font-extrabold text-slate-900 uppercase tracking-wide">Our Location in Addis Ababa</h3>
-                  <p className="text-xs text-slate-500">Visit our post-production studio in Bole, Addis Ababa, Ethiopia.</p>
+                  <h3 className="font-extrabold text-slate-900 uppercase tracking-wide">Our Location in Akaki Kality</h3>
+                  <p className="text-slate-500">Visit our post-production studio in Akaki Kality, Addis Ababa, Ethiopia.</p>
                 </div>
-                <span className="px-3 py-1 bg-blue-50 text-[#001FD1] rounded-full text-xs font-bold">Ethiopia</span>
+                <span className="px-2.5 py-1 bg-amber-50 text-amber-700 rounded-full text-xs font-bold">Akaki Kality</span>
               </div>
               
-              <div className="w-full h-80 rounded-xl overflow-hidden border border-slate-200 shadow-inner relative">
+              <div className="w-full h-72 rounded-xl overflow-hidden border border-slate-200 shadow-inner relative">
                 <iframe
-                  title="Addis Ababa Map"
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d126115.01524385966!2d38.70613271796875!3d8.980603100000001!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x164b85cef5ab402d%3A0x8467b6b037a24d49!2sAddis%20Ababa%2C%20Ethiopia!5e0!3m2!1sen!2sus!4v1700000000000!5m2!1sen!2sus"
+                  title="Akaki Kality Addis Ababa Map"
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3941.0543765103415!2d38.7562!3d8.8789!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1643b95a5f56a1b5%3A0x6b1db92c34d3b6f8!2sAkaki%20Kality%2C%20Addis%20Ababa%2C%20Ethiopia!5e0!3m2!1sen!2sus!4v1700000000000!5m2!1sen!2sus"
                   width="100%"
                   height="100%"
                   style={{ border: 0 }}
