@@ -122,17 +122,17 @@ export default function About() {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans text-[12px]">
+    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans text-[12px] -mt-14 md:-mt-[104px]">
       
-      {/* 1. HERO SECTION */}
-      <div className="relative py-12 sm:py-16 px-4 sm:px-6 lg:px-8 text-white overflow-hidden bg-slate-900">
+      {/* 1. HERO SECTION - Attached directly to header with zero gap, blue background theme */}
+      <div className="relative pt-30 pb-14 px-4 sm:px-6 lg:px-8 text-white overflow-hidden bg-gradient-to-r from-blue-600 via-[#001FD1] to-[#0B1D3A]">
         <div className="absolute inset-0 z-0">
           <img 
             src={editorBgImage} 
             alt="Video Editor Workspace" 
-            className="w-full h-full object-cover opacity-50 contrast-125 brightness-110 scale-105"
+            className="w-full h-full object-cover opacity-35 contrast-125 brightness-110 scale-105"
           />
-          <div className="absolute inset-0 bg-gradient-to-br from-[#0B1D3A]/85 via-[#0F284A]/80 to-[#142f56]/85 backdrop-blur-[2px]"></div>
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-900/80 via-[#001FD1]/75 to-[#0B1D3A]/85 backdrop-blur-[1px]"></div>
         </div>
         
         <div className="max-w-4xl mx-auto text-center relative z-10 space-y-4">
@@ -151,7 +151,7 @@ export default function About() {
           <div className="flex flex-wrap justify-center gap-3 pt-2">
             <Link
               to="/courses"
-              className="px-5 py-2.5 rounded-xl bg-[#001FD1] hover:bg-blue-700 text-white font-black text-[12px] uppercase tracking-wider shadow-md transition-all"
+              className="px-5 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-500 text-slate-950 font-black text-[12px] uppercase tracking-wider shadow-md transition-all"
             >
               Explore Courses
             </Link>
