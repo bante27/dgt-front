@@ -35,10 +35,10 @@ export default function Contact() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans text-[12px]">
+    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans text-[12px] -mt-14 md:-mt-[104px]">
       
-      {/* Hero Header - Attached directly to header with no gap, orange background styling */}
-      <div className="relative py-12 px-4 sm:px-6 lg:px-8 text-white overflow-hidden bg-gradient-to-r from-amber-500 via-amber-600 to-amber-700 m-0">
+      {/* Hero Header - Medium height attached directly to header with zero gap */}
+      <div className="relative pt-30 pb-14 px-4 sm:px-6 lg:px-8 text-white overflow-hidden bg-gradient-to-r from-amber-500 via-amber-600 to-amber-700">
         <div className="absolute inset-0 z-0">
           <img 
             src={contactBgImage} 
@@ -48,13 +48,13 @@ export default function Contact() {
           <div className="absolute inset-0 bg-gradient-to-br from-amber-600/80 via-amber-700/80 to-amber-900/85 backdrop-blur-[1px]"></div>
         </div>
 
-        <div className="max-w-7xl mx-auto text-center relative z-10 space-y-2.5">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/30 border border-white/30 text-amber-200 text-[11px] font-bold uppercase tracking-widest backdrop-blur-md shadow">
-            <MapPin className="w-3.5 h-3.5" />
+        <div className="max-w-4xl mx-auto text-center relative z-10 space-y-2">
+          <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-black/30 border border-white/30 text-amber-200 text-[11px] font-bold uppercase tracking-widest backdrop-blur-md shadow">
+            <MapPin className="w-3 h-3" />
             <span>Akaki Kality, Addis Ababa, Ethiopia</span>
           </div>
-          <h1 className="text-2xl sm:text-4xl font-black tracking-tight drop-shadow-md">Get in Touch with MrHaile</h1>
-          <p className="text-[12px] sm:text-[13px] text-amber-100 max-w-2xl mx-auto font-semibold leading-relaxed drop-shadow">
+          <h1 className="text-xl sm:text-3xl font-black tracking-tight drop-shadow-md">Get in Touch with MrHaile</h1>
+          <p className="text-[12px] text-amber-100 max-w-xl mx-auto font-semibold leading-relaxed drop-shadow">
             Akaki Kality video editing studio, masterclass support, and custom video production inquiries.
           </p>
         </div>
