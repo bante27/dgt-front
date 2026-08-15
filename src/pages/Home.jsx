@@ -178,18 +178,17 @@ export default function Home() {
           }
         }
 
-        // Iframe / Bunny Stream embed handling via postMessage or source swapping to instantly stop audio/video playback on scroll out
+        // Iframe / Bunny Stream embed handling: play when in view, stop/pause when scrolled out of view
         const iframeEl = heroIframeRef.current;
         if (iframeEl && videoData?.videoUrl) {
           try {
             if (entry.isIntersecting) {
-              if (!iframeEl.src.includes('autoplay=true')) {
+              if (!iframeEl.src || iframeEl.src === 'about:blank') {
                 iframeEl.src = videoData.videoUrl.includes('?') 
                   ? `${videoData.videoUrl}&autoplay=true` 
                   : `${videoData.videoUrl}?autoplay=true`;
               }
             } else {
-              // Clear source or pause iframe stream to guarantee zero audio/video distraction when scrolled out
               iframeEl.src = 'about:blank';
             }
           } catch (e) {}
@@ -215,8 +214,10 @@ export default function Home() {
         setIsVideoLoading(true);
         const res = await homeVideoAPI.getHomeVideo();
         if (res.data) {
-          const videoObj = Array.isArray(res.data) ? res.data[0] : res.data;
-          setVideoData(videoObj);
+          const videoObj = Array.isArray(res.data) 
+            ? res.data[0] 
+            : (res.data?.data && Array.isArray(res.data.data) ? res.data.data[0] : (res.data?.data || res.data));
+          if (videoObj) setVideoData(videoObj);
         }
       } catch (err) {
         console.error('Failed to fetch home video API:', err);
@@ -240,18 +241,34 @@ export default function Home() {
           statsAPI.getStats().catch(() => ({ data: null }))
         ]);
 
-        const coursesList = Array.isArray(coursesRes.data) ? coursesRes.data : (coursesRes.data?.data || []);
-        const assetsList = Array.isArray(assetsRes.data) ? assetsRes.data : (assetsRes.data?.data || []);
-        const portfolioList = Array.isArray(portfolioRes.data) ? portfolioRes.data : (portfolioRes.data?.data || [
-          { _id: '1', title: 'Cinematic Tech Commercial Ad', category: 'Commercial', client: 'Apex Tech', completionDate: '2026', thumbnail: 'https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?auto=format&fit=crop&q=80&w=800', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4' },
-          { _id: '2', title: 'YouTube Travel Vlog Cinematic Edit', category: 'YouTube', client: 'Global Nomad', completionDate: '2026', thumbnail: 'https://images.unsplash.com/photo-1519501025264-65ba15a82390?auto=format&fit=crop&q=80&w=800', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4' },
-          { _id: '3', title: 'Hip-Hop Music Video Color Grading', category: 'Music Video', client: 'Vibe Records', completionDate: '2026', thumbnail: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&q=80&w=800', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4' },
-          { _id: '4', title: 'Documentary Storytelling Reel', category: 'Documentary', client: 'NatGeo Style', completionDate: '2026', thumbnail: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=800', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoy.mp4' },
-          { _id: '5', title: 'Real Estate Luxury Cinematic Walkthrough', category: 'Commercial', client: 'Prime Properties', completionDate: '2026', thumbnail: 'https://images.unsplash.com/photo-1508739773434-c26b3d09e071?auto=format&fit=crop&q=80&w=800', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4' },
-          { _id: '6', title: 'VFX Sci-Fi Trailer Breakdown', category: 'VFX', client: 'Future Studios', completionDate: '2026', thumbnail: 'https://images.unsplash.com/photo-1536240478700-b869070f9279?auto=format&fit=crop&q=80&w=800', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4' }
-        ]);
+        let coursesList = [];
+        if (Array.isArray(coursesRes.data)) {
+          coursesList = coursesRes.data;
+        } else if (Array.isArray(coursesRes.data?.data)) {
+          coursesList = coursesRes.data.data;
+        } else if (coursesRes.data && typeof coursesRes.data === 'object' && Object.keys(coursesRes.data).length > 0) {
+          coursesList = [coursesRes.data];
+        }
 
-        setCourses(coursesList.slice(0, 4));
+        let assetsList = [];
+        if (Array.isArray(assetsRes.data)) {
+          assetsList = assetsRes.data;
+        } else if (Array.isArray(assetsRes.data?.data)) {
+          assetsList = assetsRes.data.data;
+        } else if (assetsRes.data && typeof assetsRes.data === 'object' && Object.keys(assetsRes.data).length > 0) {
+          assetsList = [assetsRes.data];
+        }
+
+        let portfolioList = [];
+        if (Array.isArray(portfolioRes.data)) {
+          portfolioList = portfolioRes.data;
+        } else if (Array.isArray(portfolioRes.data?.data)) {
+          portfolioList = portfolioRes.data.data;
+        } else if (portfolioRes.data && typeof portfolioRes.data === 'object' && Object.keys(portfolioRes.data).length > 0) {
+          portfolioList = [portfolioRes.data];
+        }
+
+        setCourses(coursesList);
         setShowreelProjects(portfolioList.length > 0 ? portfolioList : [
           { _id: '1', title: 'Cinematic Tech Commercial Ad', category: 'Commercial', client: 'Apex Tech', completionDate: '2026', thumbnail: 'https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?auto=format&fit=crop&q=80&w=800', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4' },
           { _id: '2', title: 'YouTube Travel Vlog Cinematic Edit', category: 'YouTube', client: 'Global Nomad', completionDate: '2026', thumbnail: 'https://images.unsplash.com/photo-1519501025264-65ba15a82390?auto=format&fit=crop&q=80&w=800', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4' },
