@@ -41,7 +41,7 @@ export const authAPI = {
 };
 
 export const courseAPI = {
-  getCourses: () => api.get('/courses'),
+  getCourses: (params) => api.get('/courses', { params }),
   getCourseById: (id) => api.get(`/courses/${id}`),
   createCourse: (courseData) => api.post('/courses', courseData),
   getLessonVideoToken: (courseId, lessonId) => api.get(`/courses/${courseId}/lessons/${lessonId}/video`),
@@ -65,7 +65,7 @@ export const serviceAPI = {
 };
 
 export const portfolioAPI = {
-  getPortfolio: () => api.get('/portfolio'),
+  getPortfolio: (params) => api.get('/portfolio', { params }),
   getPortfolioById: (id) => api.get(`/portfolio/${id}`),
   createPortfolioItem: (data) => api.post('/portfolio', data),
 };
