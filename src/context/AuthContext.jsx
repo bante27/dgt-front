@@ -83,4 +83,19 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
-export const useAuth = () => useContext(AuthContext);
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    return {
+      user: null,
+      token: null,
+      login: async () => {},
+      register: async () => {},
+      googleLogin: async () => {},
+      logout: () => {},
+      refreshProfile: async () => {},
+      loading: false
+    };
+  }
+  return context;
+};

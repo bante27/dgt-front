@@ -87,4 +87,20 @@ export const statsAPI = {
   getStats: () => api.get('/stats'),
 };
 
+export const editingAPI = {
+  getPlans: () => api.get('/editing/plans'),
+  createOrder: (orderData) => api.post('/editing/orders', orderData),
+  initializePayment: (orderData) => api.post('/editing/orders/initialize', orderData),
+  verifyPayment: (tx_ref) => api.get(`/editing/orders/verify/${tx_ref}`),
+  simulatePayment: (tx_ref) => api.post('/editing/orders/simulate-success', { tx_ref }),
+  getMyOrders: () => api.get('/editing/orders/my-orders'),
+};
+
+export const editingOrdersAPI = {
+  createOrder: (orderData) => api.post('/editing/orders', orderData),
+  getMyOrders: () => api.get('/editing/orders/my-orders'),
+  getOrders: () => api.get('/editing/orders'),
+  updateOrderStatus: (id, status) => api.put(`/editing/orders/${id}/status`, { status }),
+};
+
 export default api;

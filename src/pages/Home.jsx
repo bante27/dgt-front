@@ -1,7 +1,8 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import CourseCard from '../components/CourseCard';
-import { courseAPI, newsletterAPI, homeVideoAPI, assetAPI, statsAPI, portfolioAPI } from '../services/api';
+import { courseAPI, newsletterAPI, homeVideoAPI, assetAPI, statsAPI, portfolioAPI, editingAPI } from '../services/api';
+import { useAuth } from '../context/AuthContext';
 
 import testimonialImg1 from '../assets/testimonial1.png';
 import testimonialImg2 from '../assets/testimonial2.png';
@@ -60,7 +61,14 @@ function useSlowCounter(end, duration = 3000, decimals = 0) {
 }
 
 export default function Home() {
+  const navigate = useNavigate();
+  const { user } = useAuth();
   const [courses, setCourses] = useState([]);
+  const [plansList, setPlansList] = useState([]);
+  const [selectedPlanForOrder, setSelectedPlanForOrder] = useState(null);
+  const [orderDescription, setOrderDescription] = useState('');
+  const [orderingLoading, setOrderingLoading] = useState(false);
+  const [orderError, setOrderError] = useState('');
   const [testimonialIndex, setTestimonialIndex] = useState(0);
   const [newsletterEmail, setNewsletterEmail] = useState('');
   const [newsletterSubmitting, setNewsletterSubmitting] = useState(false);
@@ -228,6 +236,65 @@ export default function Home() {
 
     fetchHomeVideo();
   }, []);
+
+  // Fetch Editing Plans from API
+  useEffect(() => {
+    const fetchPlans = async () => {
+      try {
+        const res = await editingAPI.getPlans();
+        const data = res.data?.plans || res.data?.data || res.data;
+        if (Array.isArray(data) && data.length > 0) {
+          setPlansList(data);
+        }
+      } catch (err) {
+        console.error('Failed to fetch editing plans:', err);
+      }
+    };
+    fetchPlans();
+  }, []);
+
+  const displayPlans = (plansList.length > 0 ? plansList : pricingPlans).map((p) => ({
+    ...p,
+    name: p.name || p.title,
+    desc: p.desc || p.description,
+    period: p.period || p.billingType,
+    highlighted: p.highlighted !== undefined ? p.highlighted : (p.isPopular || false)
+  }));
+
+  const handleSelectPlan = (plan) => {
+    if (!user) {
+      navigate('/login');
+      return;
+    }
+    setSelectedPlanForOrder(plan);
+    setOrderDescription('');
+    setOrderError('');
+  };
+
+  const handleCreateOrder = async (e) => {
+    e.preventDefault();
+    if (!selectedPlanForOrder) return;
+    try {
+      setOrderingLoading(true);
+      setOrderError('');
+      const planId = selectedPlanForOrder._id || selectedPlanForOrder.id || selectedPlanForOrder.name;
+      const res = await editingAPI.createOrder({
+        planId,
+        description: orderDescription
+      });
+      if (res.data && res.data.checkoutUrl) {
+        window.location.href = res.data.checkoutUrl;
+      } else {
+        alert('Editing plan order submitted successfully!');
+        setSelectedPlanForOrder(null);
+      }
+    } catch (err) {
+      console.error('Create order error:', err);
+      setOrderError(err.response?.data?.message || 'Failed to submit editing order');
+    } finally {
+      setOrderingLoading(false);
+    }
+  };
 
   // Fetch Courses, Assets, Portfolio, and exact platform stats from backend API (/api/stats)
   useEffect(() => {
@@ -638,9 +705,9 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {pricingPlans.map((plan, idx) => (
+            {displayPlans.map((plan, idx) => (
               <div
-                key={idx}
+                key={plan._id || plan.id || idx}
                 className={`rounded-3xl p-8 transition-all relative flex flex-col justify-between ${
                   plan.highlighted
                     ? 'bg-[#052622] text-white shadow-2xl scale-105 border border-[#28E7D3]/50'
@@ -658,16 +725,16 @@ export default function Home() {
                   </h3>
                   <div>
                     <span className={`text-3xl font-serif font-bold ${plan.highlighted ? 'text-[#28E7D3]' : 'text-[#052622]'}`}>
-                      {plan.price}
+                      {typeof plan.price === 'number' ? `$${plan.price}` : plan.price}
                     </span>
-                    <span className="text-xs opacity-75 ml-1">{plan.period}</span>
+                    <span className="text-xs opacity-75 ml-1">{plan.period || plan.billingType}</span>
                   </div>
                   <p className={`text-xs ${plan.highlighted ? 'text-emerald-100/70' : 'text-slate-600'}`}>
-                    {plan.desc}
+                    {plan.desc || plan.description}
                   </p>
 
                   <ul className="space-y-2.5 pt-4">
-                    {plan.features.map((feat, fIdx) => (
+                    {(plan.features || []).map((feat, fIdx) => (
                       <li key={fIdx} className="flex items-center gap-2 text-xs">
                         <span>{feat}</span>
                       </li>
@@ -677,6 +744,7 @@ export default function Home() {
 
                 <div className="pt-8">
                   <button
+                    onClick={() => handleSelectPlan(plan)}
                     className={`w-full py-3 rounded-full font-bold text-xs transition-all ${
                       plan.highlighted
                         ? 'bg-[#28E7D3] text-[#041F1C] hover:bg-[#20caa9]'
@@ -879,7 +947,69 @@ export default function Home() {
         </div>
       )}
 
+      {/* Editing Plan Order Modal */}
+      {selectedPlanForOrder && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 backdrop-blur-md p-4 font-sans">
+          <div className="bg-white max-w-lg w-full rounded-3xl p-6 sm:p-8 relative shadow-2xl space-y-6">
+            <button
+              onClick={() => setSelectedPlanForOrder(null)}
+              className="absolute top-4 right-4 z-20 w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center font-bold text-sm transition-colors shadow-sm"
+            >
+              ✕
+            </button>
+            <div className="space-y-2">
+              <span className="text-[10px] font-bold uppercase tracking-widest text-teal-700 bg-teal-50 px-3 py-1 rounded-full border border-teal-200">
+                Editing Order Confirmation
+              </span>
+              <h3 className="text-xl font-bold text-[#052622]">
+                {selectedPlanForOrder.name} - {typeof selectedPlanForOrder.price === 'number' ? `$${selectedPlanForOrder.price}` : selectedPlanForOrder.price}
+              </h3>
+              <p className="text-xs text-slate-600">
+                Provide any optional project notes, instructions, or links to raw footage for this editing plan.
+              </p>
+            </div>
+
+            {orderError && (
+              <div className="p-3 bg-red-50 border border-red-200 text-red-600 text-xs rounded-xl">
+                {orderError}
+              </div>
+            )}
+
+            <form onSubmit={handleCreateOrder} className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1.5">Project Notes & Description</label>
+                <textarea
+                  rows="4"
+                  value={orderDescription}
+                  onChange={(e) => setOrderDescription(e.target.value)}
+                  placeholder="Describe your video editing project, style references, or paste raw footage links..."
+                  className="w-full p-3 rounded-xl border border-slate-300 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#28E7D3]"
+                ></textarea>
+              </div>
+
+              <div className="flex items-center justify-end gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setSelectedPlanForOrder(null)}
+                  className="px-5 py-2.5 rounded-xl border border-slate-300 text-slate-700 font-bold text-xs hover:bg-slate-100 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={orderingLoading}
+                  className="px-6 py-2.5 rounded-xl bg-[#28E7D3] hover:bg-[#20caa9] text-[#041F1C] font-bold text-xs transition-all shadow-md disabled:opacity-50 flex items-center gap-2"
+                >
+                  {orderingLoading ? 'Processing...' : 'Proceed to Checkout & Submit'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
+
 

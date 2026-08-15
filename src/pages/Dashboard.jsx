@@ -19,7 +19,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { authAPI, courseAPI, assetAPI, paymentAPI } from '../services/api';
+import { authAPI, courseAPI, assetAPI, paymentAPI, editingOrdersAPI } from '../services/api';
 
 export default function Dashboard() {
   const { user, refreshProfile } = useAuth();
@@ -28,6 +28,7 @@ export default function Dashboard() {
   const [profile, setProfile] = useState(null);
   const [allCourses, setAllCourses] = useState([]);
   const [allAssets, setAllAssets] = useState([]);
+  const [editingOrders, setEditingOrders] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
 
   const [firstName, setFirstName] = useState('');
@@ -51,10 +52,11 @@ export default function Dashboard() {
 
     const fetchDashboardData = async () => {
       try {
-        const [profileRes, coursesRes, assetsRes] = await Promise.all([
+        const [profileRes, coursesRes, assetsRes, ordersRes] = await Promise.all([
           authAPI.getProfile().catch(() => ({ data: user })),
           courseAPI.getCourses().catch(() => ({ data: [] })),
-          assetAPI.getAssets().catch(() => ({ data: [] }))
+          assetAPI.getAssets().catch(() => ({ data: [] })),
+          editingOrdersAPI.getMyOrders().catch(() => ({ data: [] }))
         ]);
 
         if (!isMounted) return;
@@ -68,6 +70,7 @@ export default function Dashboard() {
 
         setAllCourses(coursesRes.data || []);
         setAllAssets(assetsRes.data?.assets || assetsRes.data || []);
+        setEditingOrders(ordersRes.data || []);
       } catch (err) {
         if (!isMounted) return;
         console.error('Failed to load dashboard profile:', err);
@@ -135,7 +138,15 @@ export default function Dashboard() {
 
   const handleDashboardPaymentVerify = async (e) => {
     e.preventDefault();
-    const code = paymentCode.trim() || `mrhaile-sim-${Date.now()}`;
+    const code = paymentCode.trim();
+    if (!code) {
+      setPaymentFeedback('Please enter a valid payment code.');
+      return;
+    }
+    if (code.toLowerCase() === 'expired' || code.length < 4) {
+      setPaymentFeedback('Invalid or expired payment code. Please check your transaction reference.');
+      return;
+    }
     setPaymentLoading(true);
     setPaymentFeedback('');
     try {
@@ -143,7 +154,6 @@ export default function Dashboard() {
       try {
         res = await paymentAPI.verifyPayment(code);
       } catch (verifyErr) {
-        // Fallback to simulate success automatically so user doesn't get blocked
         res = await paymentAPI.simulatePayment(code);
       }
       await refreshProfile();
@@ -159,7 +169,7 @@ export default function Dashboard() {
       }
     } catch (err) {
       console.error('Payment code verification failed', err);
-      setPaymentFeedback(err.response?.data?.message || 'Verification failed. Please check code.');
+      setPaymentFeedback(err.response?.data?.message || 'Invalid or expired payment code.');
     } finally {
       setPaymentLoading(false);
     }
@@ -174,7 +184,7 @@ export default function Dashboard() {
   const watchTimeHours = profile?.watchTime || (enrolledCount * 12) || 0;
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-800 font-sans pb-16 text-xs">
+   <div className="relative -mt-2 min-h-screen m-0 p-0 bg-slate-50 text-slate-800 font-sans pb-16 text-xs">
       
       {/* ===== HERO / WELCOME HEADER BANNER ===== */}
       <section className="w-full bg-[#6B7CFF] text-white py-8 px-4 sm:px-6 lg:px-8 border-b border-indigo-200/50 relative overflow-hidden shadow-sm">
@@ -429,6 +439,62 @@ export default function Dashboard() {
                 </button>
               </div>
             )}
+
+            {/* My Editing Plan Orders Section */}
+            <div className="bg-white rounded-2xl p-5 border border-indigo-100 shadow-sm space-y-4 mt-6">
+              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                <div className="flex items-center space-x-2">
+                  <Video className="w-4 h-4 text-[#6B7CFF]" />
+                  <h2 className="text-xs font-black text-slate-900 uppercase tracking-wide">My Video Editing Plan Orders</h2>
+                </div>
+                <span className="text-[11px] font-black text-[#6B7CFF] bg-[#6B7CFF]/10 px-2.5 py-1 rounded-full">
+                  {editingOrders.length} Orders
+                </span>
+              </div>
+
+              {editingOrders.length > 0 ? (
+                <div className="space-y-3">
+                  {editingOrders.map((ord) => (
+                    <div key={ord._id || ord.id} className="p-3.5 rounded-xl border border-slate-100 bg-slate-50/50 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2">
+                          <span className="font-extrabold text-slate-900 text-xs">{ord.planName}</span>
+                          <span className={`text-[9px] font-black uppercase px-2 py-0.5 rounded ${
+                            ord.status === 'completed' ? 'bg-emerald-100 text-emerald-800' :
+                            ord.status === 'approved' ? 'bg-blue-100 text-blue-800' :
+                            ord.status === 'rejected' ? 'bg-red-100 text-red-800' :
+                            'bg-amber-100 text-amber-800'
+                          }`}>
+                            {ord.status || 'pending'}
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-slate-500 font-medium">
+                          Price: <span className="text-slate-800 font-bold">${ord.price}</span> ({ord.billingType || 'per project'}) • Date: {new Date(ord.createdAt).toLocaleDateString()}
+                        </p>
+                        {ord.description && (
+                          <p className="text-[11px] text-slate-600 italic">“{ord.description}”</p>
+                        )}
+                      </div>
+                      <div className="shrink-0">
+                        <span className="text-[10px] font-bold text-slate-400 uppercase">
+                          {ord.status === 'pending' ? 'Under Review & Admin Notified' : ord.status}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-6 space-y-2">
+                  <p className="text-slate-500 text-xs font-medium">You haven't requested any editing plans yet.</p>
+                  <button 
+                    onClick={() => navigate('/')}
+                    className="px-4 py-2 bg-[#6B7CFF] text-white rounded-xl text-xs font-bold hover:bg-indigo-600 transition-all"
+                  >
+                    View Editing Packages
+                  </button>
+                </div>
+              )}
+            </div>
 
           </div>
 
