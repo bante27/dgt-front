@@ -22,6 +22,16 @@ export default function CourseDetail() {
   const [reviewError, setReviewError] = useState('');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  const getEmbedUrl = (url) => {
+    if (!url) return '';
+    if (url.includes('mediadelivery.net') || url.includes('/embed/') || url.includes('.mp4') || url.includes('.webm')) {
+      return url;
+    }
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+    const match = url.match(regExp);
+    return (match && match[2].length === 11) ? `https://www.youtube.com/embed/${match[2]}` : url;
+  };
+
   const isEnrolled = user && course && (
     (user.enrolledCourses && user.enrolledCourses.some(c => {
       const cStr = typeof c === 'object' && c !== null ? (c._id?.toString() || c.toString()) : String(c);
@@ -50,7 +60,8 @@ export default function CourseDetail() {
           setActiveLessonId(firstLesson._id || firstLesson.id);
           const userEnrolled = user && ((user.enrolledCourses && user.enrolledCourses.some(c => (c._id === id || c === id || c._id === courseData?._id || c === courseData?._id))) || courseData?.price === 0);
           if (userEnrolled || firstLesson.freePreview) {
-            setActiveVideoUrl(firstLesson.videoUrl || (firstLesson.bunnyVideoId ? `https://iframe.mediadelivery.net/embed/718466/${firstLesson.bunnyVideoId}` : ''));
+            const rawUrl = firstLesson.videoUrl || (firstLesson.bunnyVideoId ? `https://iframe.mediadelivery.net/embed/718466/${firstLesson.bunnyVideoId}` : '');
+            setActiveVideoUrl(getEmbedUrl(rawUrl));
           } else {
             setActiveVideoUrl('');
           }
@@ -136,7 +147,8 @@ export default function CourseDetail() {
     <div className="space-y-0.5">
       {(course.lessons || []).map((lesson, index) => {
         const lessonId = lesson._id || lesson.id;
-        const lessonUrl = lesson.videoUrl || (lesson.bunnyVideoId ? `https://iframe.mediadelivery.net/embed/718466/${lesson.bunnyVideoId}` : '');
+        const rawUrl = lesson.videoUrl || (lesson.bunnyVideoId ? `https://iframe.mediadelivery.net/embed/718466/${lesson.bunnyVideoId}` : '');
+        const lessonUrl = getEmbedUrl(rawUrl);
         const isAccessible = isEnrolled || lesson.freePreview;
         const isPlaying = activeLessonId === lessonId;
 
@@ -235,7 +247,8 @@ export default function CourseDetail() {
               disabled={!prevLesson}
               onClick={() => {
                 if (prevLesson) {
-                  const url = prevLesson.videoUrl || (prevLesson.bunnyVideoId ? `https://iframe.mediadelivery.net/embed/718466/${prevLesson.bunnyVideoId}` : '');
+                  const rawUrl = prevLesson.videoUrl || (prevLesson.bunnyVideoId ? `https://iframe.mediadelivery.net/embed/718466/${prevLesson.bunnyVideoId}` : '');
+                  const url = getEmbedUrl(rawUrl);
                   const accessible = isEnrolled || prevLesson.freePreview;
                   if (accessible && url) {
                     setActiveVideoUrl(url);
@@ -275,7 +288,8 @@ export default function CourseDetail() {
               disabled={!nextLesson}
               onClick={() => {
                 if (nextLesson) {
-                  const url = nextLesson.videoUrl || (nextLesson.bunnyVideoId ? `https://iframe.mediadelivery.net/embed/718466/${nextLesson.bunnyVideoId}` : '');
+                  const rawUrl = nextLesson.videoUrl || (nextLesson.bunnyVideoId ? `https://iframe.mediadelivery.net/embed/718466/${nextLesson.bunnyVideoId}` : '');
+                  const url = getEmbedUrl(rawUrl);
                   const accessible = isEnrolled || nextLesson.freePreview;
                   if (accessible && url) {
                     setActiveVideoUrl(url);
