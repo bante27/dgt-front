@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { User, LogOut, Menu, X, Home, Send, MessageCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
@@ -17,12 +17,19 @@ function Logo({ className = "w-14 h-7 object-contain" }) {
 export default function Navbar() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const isHome = location.pathname === '/';
   const [isOpen, setIsOpen] = useState(false);
   const [showNavbar, setShowNavbar] = useState(true);
   const lastScrollYRef = useRef(0);
   const [showScrollButton, setShowScrollButton] = useState(false);
 
   useEffect(() => {
+    if (!isHome) {
+      setShowNavbar(true);
+      return;
+    }
+
     let scrollTimeout = null;
 
     const handleScroll = () => {
@@ -53,7 +60,7 @@ export default function Navbar() {
       window.removeEventListener('scroll', handleScroll);
       if (scrollTimeout) clearTimeout(scrollTimeout);
     };
-  }, []);
+  }, [isHome]);
 
   const handleLogout = () => {
     logout();

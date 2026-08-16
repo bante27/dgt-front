@@ -111,7 +111,7 @@ export default function Courses() {
                     onClick={() => setSelectedCategory(cat.name)}
                     className={`flex items-center justify-between px-3 py-2 rounded-xl text-[12px] font-medium cursor-pointer transition-all ${
                       isSelected 
-                        ? 'bg-[#001FD1] text-white font-bold shadow-md shadow-blue-500/20' 
+                        ? 'bg-[#EE7D1B] text-white font-bold shadow-md shadow-orange-500/20' 
                         : 'text-slate-700 hover:bg-slate-100 hover:text-slate-900'
                     }`}
                   >
@@ -139,7 +139,7 @@ export default function Courses() {
                     onClick={() => setSelectedType(type.name)}
                     className={`flex items-center justify-between px-3 py-2 rounded-xl text-[12px] font-medium cursor-pointer transition-all ${
                       isSelected 
-                        ? 'bg-[#001FD1] text-white font-bold shadow-md shadow-blue-500/20' 
+                        ? 'bg-[#EE7D1B] text-white font-bold shadow-md shadow-orange-500/20' 
                         : 'text-slate-700 hover:bg-slate-100 hover:text-slate-900'
                     }`}
                   >
@@ -189,7 +189,7 @@ export default function Courses() {
                   onClick={() => setPage(pNum)}
                   className={`w-9 h-9 rounded-lg font-black transition-all ${
                     page === pNum
-                      ? 'bg-[#001FD1] text-white shadow-sm'
+                      ? 'bg-[#EE7D1B] text-white shadow-sm'
                       : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
                   }`}
                 >

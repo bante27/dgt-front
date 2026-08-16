@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { Send } from 'lucide-react';
 import { newsletterAPI } from '../services/api';
 
@@ -18,6 +18,8 @@ export default function Footer() {
   const [newsletterEmail, setNewsletterEmail] = useState('');
   const [newsletterSubmitting, setNewsletterSubmitting] = useState(false);
   const [newsletterMsg, setNewsletterMsg] = useState('');
+  const location = useLocation();
+  const isSidebarPage = ['/courses', '/assets', '/portfolio'].includes(location.pathname);
 
   const handleNewsletterSubmit = async (e) => {
     e.preventDefault();
@@ -39,7 +41,7 @@ export default function Footer() {
 
   return (
     <footer className="bg-white pt-5 pb-28 md:pb-6 font-sans text-slate-900 border-t border-slate-100">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className={`mx-auto px-4 sm:px-6 lg:px-8 transition-all ${isSidebarPage ? 'max-w-7xl lg:ml-80 lg:mr-12' : 'max-w-7xl'}`}>
         
         {/* Main Footer Layout: 2 Columns */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
