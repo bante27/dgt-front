@@ -59,6 +59,19 @@ export default function Home() {
   const [showreelCategory, setShowreelCategory] = useState('All');
   const [showreelProjects, setShowreelProjects] = useState([]);
   const [showreelLoading, setShowreelLoading] = useState(false);
+
+  const getEmbedUrl = (url) => {
+    if (!url) return '';
+    if (url.includes('mediadelivery.net') || url.includes('/embed/') || url.includes('.mp4') || url.includes('.webm')) {
+      return url;
+    }
+    if (/^[a-zA-Z0-9_-]{11}$/.test(url.trim())) {
+      return `https://www.youtube.com/embed/${url.trim()}`;
+    }
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|shorts\/|watch\?v=|&v=)([^#&?]*).*/;
+    const match = url.match(regExp);
+    return (match && match[2].length >= 10) ? `https://www.youtube.com/embed/${match[2]}` : url;
+  };
   const [activeShowreelVideo, setActiveShowreelVideo] = useState(null);
 
   const [videoData, setVideoData] = useState({
@@ -342,7 +355,8 @@ export default function Home() {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {filteredShowreel.map(item => {
-              const videoEmbedUrl = item.videoUrl || (item.bunnyVideoId ? `https://iframe.mediadelivery.net/embed/718466/${item.bunnyVideoId}` : '');
+              const rawUrl = item.videoUrl || item.youtubeUrl || (item.bunnyVideoId ? `https://iframe.mediadelivery.net/embed/718466/${item.bunnyVideoId}` : '');
+              const videoEmbedUrl = getEmbedUrl(rawUrl);
               return (
                 <div key={item._id || item.id} onClick={() => setActiveShowreelVideo({ ...item, url: videoEmbedUrl })} className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden group hover:shadow-xl transition-all cursor-pointer flex flex-col">
                   <div className="relative h-44 bg-slate-900 flex items-center justify-center overflow-hidden">
