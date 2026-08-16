@@ -2,77 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Search, Filter, Grid, Check, Download, X, Star, MessageSquare, Send, Play, Eye, Users } from 'lucide-react';
 import { assetAPI, reviewAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
-
-function AssetCard({ asset, onView, onDownload }) {
-  const [rating, setRating] = useState(asset.rating || 4.9);
-  const [reviewCount, setReviewCount] = useState(asset.downloadsCount || 0);
-
-  useEffect(() => {
-    const assetId = asset._id || asset.id;
-    if (assetId) {
-      reviewAPI.getReviewsByTarget(assetId)
-        .then((res) => {
-          if (res.data) {
-            if (res.data.count !== undefined) setReviewCount(res.data.count);
-            else if (Array.isArray(res.data.reviews)) setReviewCount(res.data.reviews.length);
-            if (res.data.averageRating !== undefined) setRating(res.data.averageRating);
-          }
-        })
-        .catch(() => {});
-    }
-  }, [asset]);
-
-  return (
-    <div className="bg-white rounded-xl overflow-hidden border border-slate-100 shadow-sm flex flex-col justify-between text-[12px]">
-      <div>
-        <div className="relative h-40 overflow-hidden bg-slate-100">
-          <img
-            src={asset.thumbnail || asset.url || 'https://images.unsplash.com/photo-1536240478700-b869070f9279?auto=format&fit=crop&q=80&w=800'}
-            alt={asset.title}
-            className="w-full h-full object-cover"
-            loading="lazy"
-          />
-          <div className="absolute top-2 right-2 bg-slate-900/90 px-2 py-0.5 rounded text-[12px] font-black text-white shadow-sm">
-            ${asset.price || 0}
-          </div>
-          <div className="absolute bottom-2 left-2 bg-[#001FD1] px-2 py-0.5 rounded text-[11px] font-black text-white capitalize shadow-sm">
-            {asset.category || 'Digital Asset'}
-          </div>
-        </div>
-
-        <div className="p-3">
-          <h3 className="text-[12px] font-bold text-slate-900 mb-1 line-clamp-1">{asset.title}</h3>
-          <p className="text-[12px] text-slate-400 mb-2">
-            Format: {asset.resolution || asset.fileType || 'Standard'} • Instant
-          </p>
-
-          <div className="flex items-center justify-between text-[12px] text-slate-400 pt-2 border-t border-slate-50">
-            <span className="flex items-center gap-1"><Eye className="w-3 h-3 text-[#001FD1]" /> {asset.resolution || 'HD'}</span>
-            <span className="flex items-center gap-1"><Users className="w-3 h-3 text-pink-600" /> {reviewCount}</span>
-            <span className="flex items-center gap-1 text-amber-500 font-bold"><Star className="w-3 h-3 fill-amber-400 text-amber-400" /> {rating}</span>
-          </div>
-        </div>
-      </div>
-
-      <div className="p-3 pt-0 grid grid-cols-2 gap-2">
-        <button
-          onClick={() => onView && onView(asset)}
-          className="py-2 rounded-lg bg-slate-50 hover:bg-slate-100 text-slate-700 font-bold flex items-center justify-center gap-1.5 transition-all text-[12px]"
-        >
-          <Eye className="w-3 h-3 text-[#001FD1]" />
-          <span>View</span>
-        </button>
-        <button
-          onClick={() => onDownload && onDownload(asset)}
-          className="py-2 rounded-lg bg-[#001FD1] hover:bg-blue-800 text-white font-bold flex items-center justify-center gap-1.5 shadow-sm transition-all text-[12px]"
-        >
-          <Download className="w-3 h-3 text-white" />
-          <span>Download</span>
-        </button>
-      </div>
-    </div>
-  );
-}
+import AssetCard from '../components/AssetCard';
 
 export default function AssetHub() {
   const [assets, setAssets] = useState([]);
