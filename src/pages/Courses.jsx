@@ -81,7 +81,7 @@ export default function Courses() {
       <div className="relative flex flex-col lg:flex-row items-start gap-8 w-full max-w-7xl mx-auto">
         
         {/* Left Sidebar: Fixed edge-to-edge from top to bottom corner */}
-        <div className="w-full lg:w-72 lg:fixed lg:left-0 lg:top-[80px] lg:bottom-0 lg:h-auto lg:overflow-y-auto space-y-6 bg-slate-50 p-6 rounded-none border-r border-slate-200 shadow-none text-[12px] z-20">
+        <div className="w-full lg:w-72 lg:fixed lg:left-0 lg:top-[80px] lg:bottom-0 lg:h-auto lg:overflow-y-auto space-y-6 bg-slate-900 p-6 rounded-none border-r border-slate-800 shadow-none text-[12px] z-20 text-slate-100">
           
           <div>
             <h4 className="text-[11px] font-extrabold uppercase tracking-widest text-slate-400 mb-3 px-2">Main Menu</h4>
@@ -92,13 +92,13 @@ export default function Courses() {
                 placeholder="Search Courses..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-3 py-2.5 text-[12px] text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#001FD1] transition-all"
+                className="w-full bg-slate-800 border border-slate-700 rounded-xl pl-10 pr-3 py-2.5 text-[12px] text-white placeholder-slate-400 focus:outline-none focus:border-[#EE7D1B] transition-all"
               />
             </div>
           </div>
 
           <div className="space-y-2">
-            <h3 className="text-[11px] font-black uppercase tracking-wider text-slate-500 px-2 mb-2 flex items-center justify-between">
+            <h3 className="text-[11px] font-black uppercase tracking-wider text-slate-400 px-2 mb-2 flex items-center justify-between">
               <span>Categories</span>
               <Filter className="w-3.5 h-3.5 text-slate-400" />
             </h3>
@@ -112,14 +112,14 @@ export default function Courses() {
                     className={`flex items-center justify-between px-3 py-2 rounded-xl text-[12px] font-medium cursor-pointer transition-all ${
                       isSelected 
                         ? 'bg-[#EE7D1B] text-white font-bold shadow-md shadow-orange-500/20' 
-                        : 'text-slate-700 hover:bg-slate-100 hover:text-slate-900'
+                        : 'text-slate-300 hover:bg-slate-800 hover:text-white'
                     }`}
                   >
                     <div className="flex items-center gap-2.5">
-                      <span className={`w-1.5 h-1.5 rounded-full ${isSelected ? 'bg-white' : 'bg-slate-400'}`}></span>
+                      <span className={`w-1.5 h-1.5 rounded-full ${isSelected ? 'bg-white' : 'bg-slate-500'}`}></span>
                       <span>{cat.name}</span>
                     </div>
-                    <span className={`text-[11px] px-1.5 py-0.5 rounded-md ${isSelected ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-500'}`}>
+                    <span className={`text-[11px] px-1.5 py-0.5 rounded-md ${isSelected ? 'bg-white/20 text-white' : 'bg-slate-800 text-slate-400'}`}>
                       {cat.count}
                     </span>
                   </div>
@@ -128,8 +128,8 @@ export default function Courses() {
             </div>
           </div>
 
-          <div className="space-y-2 pt-4 border-t border-slate-200">
-            <h3 className="text-[11px] font-black uppercase tracking-wider text-slate-500 px-2 mb-2">Pricing Type</h3>
+          <div className="space-y-2 pt-4 border-t border-slate-800">
+            <h3 className="text-[11px] font-black uppercase tracking-wider text-slate-400 px-2 mb-2">Pricing Type</h3>
             <div className="space-y-1">
               {types.map((type) => {
                 const isSelected = selectedType === type.name;
@@ -140,14 +140,14 @@ export default function Courses() {
                     className={`flex items-center justify-between px-3 py-2 rounded-xl text-[12px] font-medium cursor-pointer transition-all ${
                       isSelected 
                         ? 'bg-[#EE7D1B] text-white font-bold shadow-md shadow-orange-500/20' 
-                        : 'text-slate-700 hover:bg-slate-100 hover:text-slate-900'
+                        : 'text-slate-300 hover:bg-slate-800 hover:text-white'
                     }`}
                   >
                     <div className="flex items-center gap-2.5">
-                      <span className={`w-1.5 h-1.5 rounded-full ${isSelected ? 'bg-white' : 'bg-slate-400'}`}></span>
+                      <span className={`w-1.5 h-1.5 rounded-full ${isSelected ? 'bg-white' : 'bg-slate-500'}`}></span>
                       <span>{type.name}</span>
                     </div>
-                    <span className={`text-[11px] px-1.5 py-0.5 rounded-md ${isSelected ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-500'}`}>
+                    <span className={`text-[11px] px-1.5 py-0.5 rounded-md ${isSelected ? 'bg-white/20 text-white' : 'bg-slate-800 text-slate-400'}`}>
                       {type.count}
                     </span>
                   </div>
