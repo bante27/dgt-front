@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { BookOpen, Search, Filter, LayoutGrid as GridIcon, Check } from 'lucide-react';
+import { 
+  BookOpen, Search, Filter, LayoutGrid as GridIcon, Check, 
+  Home, Library, Sparkles, Radio, FileText, Compass, Award, Activity 
+} from 'lucide-react';
 import CourseCard from '../components/CourseCard';
 import { courseAPI } from '../services/api';
 
@@ -74,79 +77,79 @@ export default function Courses() {
       
       {error && <div className="p-4 rounded-xl bg-red-50 border border-red-200 text-[12px] text-red-600 text-center mb-6">{error}</div>}
 
-      {/* Main container with 4-column grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 w-full max-w-7xl mx-auto items-start">
+      {/* Strict 2-Column Desktop Layout Wrapper */}
+      <div className="relative flex flex-col lg:flex-row items-start gap-8 w-full max-w-7xl mx-auto">
         
-        {/* Left Sidebar Filters: Constant / sticky position */}
-        <div className="lg:col-span-1 space-y-4 bg-slate-100 p-4 rounded-xl border border-slate-300 shadow-md sticky top-28 self-start text-[12px] z-20">
+        {/* Left Sidebar: Fixed edge-to-edge from top to bottom corner */}
+        <div className="w-full lg:w-72 lg:fixed lg:left-0 lg:top-[80px] lg:bottom-0 lg:h-auto lg:overflow-y-auto space-y-6 bg-slate-50 p-6 rounded-none border-r border-slate-200 shadow-none text-[12px] z-20">
           
-          {/* Search Box */}
-          <div className="relative">
-            <Search className="absolute left-3.5 top-3 w-4 h-4 text-slate-400" />
-            <input
-              type="text"
-              placeholder="Search Courses..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-white border border-slate-200 rounded-lg pl-10 pr-3 py-2.5 text-[12px] text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#001FD1]"
-            />
+          <div>
+            <h4 className="text-[11px] font-extrabold uppercase tracking-widest text-slate-400 mb-3 px-2">Main Menu</h4>
+            <div className="relative mb-4">
+              <Search className="absolute left-3.5 top-3 w-4 h-4 text-slate-400" />
+              <input
+                type="text"
+                placeholder="Search Courses..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-3 py-2.5 text-[12px] text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#001FD1] transition-all"
+              />
+            </div>
           </div>
 
-          {/* Categories Filter */}
           <div className="space-y-2">
-            <h3 className="text-[12px] font-black uppercase tracking-wider text-slate-900 flex items-center justify-between">
+            <h3 className="text-[11px] font-black uppercase tracking-wider text-slate-500 px-2 mb-2 flex items-center justify-between">
               <span>Categories</span>
-              <Filter className="w-3.5 h-3.5 text-slate-500" />
+              <Filter className="w-3.5 h-3.5 text-slate-400" />
             </h3>
-            <div className="space-y-1.5">
+            <div className="space-y-1">
               {categories.map((cat) => {
                 const isSelected = selectedCategory === cat.name;
                 return (
                   <div
                     key={cat.name}
                     onClick={() => setSelectedCategory(cat.name)}
-                    className="flex items-center justify-between text-[12px] font-medium text-slate-700 cursor-pointer py-1"
+                    className={`flex items-center justify-between px-3 py-2 rounded-xl text-[12px] font-medium cursor-pointer transition-all ${
+                      isSelected 
+                        ? 'bg-[#001FD1] text-white font-bold shadow-md shadow-blue-500/20' 
+                        : 'text-slate-700 hover:bg-slate-100 hover:text-slate-900'
+                    }`}
                   >
                     <div className="flex items-center gap-2.5">
-                      <div 
-                        className={`w-4 h-4 rounded border flex items-center justify-center transition-all ${
-                          isSelected ? 'bg-[#001FD1] border-[#001FD1] text-white' : 'border-slate-300 bg-white'
-                        }`}
-                      >
-                        {isSelected && <Check className="w-2.5 h-2.5 text-white" />}
-                      </div>
-                      <span className={isSelected ? 'font-bold text-slate-900' : ''}>{cat.name}</span>
+                      <span className={`w-1.5 h-1.5 rounded-full ${isSelected ? 'bg-white' : 'bg-slate-400'}`}></span>
+                      <span>{cat.name}</span>
                     </div>
-                    <span className="text-[12px] text-slate-400">({cat.count})</span>
+                    <span className={`text-[11px] px-1.5 py-0.5 rounded-md ${isSelected ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-500'}`}>
+                      {cat.count}
+                    </span>
                   </div>
                 );
               })}
             </div>
           </div>
 
-          {/* Pricing Type Filter */}
-          <div className="space-y-2 pt-3 border-t border-slate-200">
-            <h3 className="text-[12px] font-black uppercase tracking-wider text-slate-900">Pricing Type</h3>
-            <div className="space-y-1.5">
+          <div className="space-y-2 pt-4 border-t border-slate-200">
+            <h3 className="text-[11px] font-black uppercase tracking-wider text-slate-500 px-2 mb-2">Pricing Type</h3>
+            <div className="space-y-1">
               {types.map((type) => {
                 const isSelected = selectedType === type.name;
                 return (
                   <div
                     key={type.name}
                     onClick={() => setSelectedType(type.name)}
-                    className="flex items-center justify-between text-[12px] font-medium text-slate-700 cursor-pointer py-1"
+                    className={`flex items-center justify-between px-3 py-2 rounded-xl text-[12px] font-medium cursor-pointer transition-all ${
+                      isSelected 
+                        ? 'bg-[#001FD1] text-white font-bold shadow-md shadow-blue-500/20' 
+                        : 'text-slate-700 hover:bg-slate-100 hover:text-slate-900'
+                    }`}
                   >
                     <div className="flex items-center gap-2.5">
-                      <div 
-                        className={`w-4 h-4 rounded border flex items-center justify-center transition-all ${
-                          isSelected ? 'bg-[#001FD1] border-[#001FD1] text-white' : 'border-slate-300 bg-white'
-                        }`}
-                      >
-                        {isSelected && <Check className="w-2.5 h-2.5 text-white" />}
-                      </div>
-                      <span className={isSelected ? 'font-bold text-slate-900' : ''}>{type.name}</span>
+                      <span className={`w-1.5 h-1.5 rounded-full ${isSelected ? 'bg-white' : 'bg-slate-400'}`}></span>
+                      <span>{type.name}</span>
                     </div>
-                    <span className="text-[12px] text-slate-400">({type.count})</span>
+                    <span className={`text-[11px] px-1.5 py-0.5 rounded-md ${isSelected ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-500'}`}>
+                      {type.count}
+                    </span>
                   </div>
                 );
               })}
@@ -155,36 +158,21 @@ export default function Courses() {
 
         </div>
 
-        {/* Right Main Content */}
-        <div className="lg:col-span-3 space-y-4 w-full">
-          
-          {/* Header Bar */}
-          <div className="flex items-center justify-between bg-slate-50 px-4 py-2.5 rounded-xl border border-slate-200 text-[12px]">
-            <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-[#001FD1]"></span>
-              <span className="font-bold text-slate-700">{total} Courses</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <div className="p-1 rounded bg-[#001FD1] text-white shadow-xs">
-                <GridIcon className="w-3.5 h-3.5" />
-              </div>
-            </div>
-          </div>
+        {/* Right Content Column: Offset to the right on large screens to make room for the fixed sidebar */}
+        <div className="w-full lg:ml-80 lg:flex-1 space-y-6 min-w-0">
 
-          {/* Courses Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 w-full">
             {filteredCourses.map((course) => (
               <CourseCard key={course._id || course.id} course={course} />
             ))}
           </div>
 
           {filteredCourses.length === 0 && (
-            <div className="text-center py-16 bg-slate-50 rounded-xl border border-slate-200 text-[12px]">
+            <div className="text-center py-16 text-[12px]">
               <p className="text-slate-500 font-bold">No courses found matching your selected filters on this page.</p>
             </div>
           )}
 
-          {/* Pagination Controls ("Next Page", Previous Page, Page Numbers) */}
           {pages > 1 && (
             <div className="flex flex-wrap items-center justify-center gap-2 pt-6 border-t border-slate-200 text-[12px]">
               <button

@@ -184,8 +184,9 @@ export default function AssetHub() {
     <div className="min-h-screen pt-6 pb-20 px-4 sm:px-8 lg:px-12 w-full bg-white text-slate-900 font-sans text-[12px]">
       {error && <div className="p-4 rounded-xl bg-red-50 border border-red-200 text-[12px] text-red-600 text-center mb-6">{error}</div>}
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 w-full max-w-7xl mx-auto items-start">
-        <div className="lg:col-span-1 space-y-4 bg-slate-100 p-4 rounded-xl border border-slate-300 shadow-md sticky top-28 self-start text-[12px] z-20">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 w-full max-w-7xl mx-auto">
+        <div className="lg:col-span-1">
+          <div className="lg:sticky lg:top-28 space-y-4 bg-slate-100 p-4 rounded-xl border border-slate-300 shadow-md text-[12px] z-20">
           <div className="relative">
             <Search className="absolute left-3.5 top-3 w-4 h-4 text-slate-400" />
             <input
@@ -248,6 +249,7 @@ export default function AssetHub() {
             </div>
           </div>
         </div>
+      </div>
 
         <div className="lg:col-span-3 space-y-4 w-full">
           <div className="flex items-center justify-between bg-slate-50 px-4 py-2.5 rounded-xl border border-slate-200 text-[12px]">
