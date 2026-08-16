@@ -184,87 +184,91 @@ export default function AssetHub() {
     <div className="min-h-screen pt-6 pb-20 px-4 sm:px-8 lg:px-12 w-full bg-white text-slate-900 font-sans text-[12px]">
       {error && <div className="p-4 rounded-xl bg-red-50 border border-red-200 text-[12px] text-red-600 text-center mb-6">{error}</div>}
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 w-full max-w-7xl mx-auto">
-        <div className="lg:col-span-1">
-          <div className="lg:sticky lg:top-28 space-y-4 bg-slate-100 p-4 rounded-xl border border-slate-300 shadow-md text-[12px] z-20">
-          <div className="relative">
-            <Search className="absolute left-3.5 top-3 w-4 h-4 text-slate-400" />
-            <input
-              type="text"
-              placeholder="Search Assets..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-white border border-slate-200 rounded-lg pl-10 pr-3 py-2.5 text-[12px] text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#001FD1]"
-            />
+      {/* Strict 2-Column Desktop Layout Wrapper */}
+      <div className="relative flex flex-col lg:flex-row items-start gap-8 w-full max-w-7xl mx-auto">
+        
+        {/* Left Sidebar: Fixed edge-to-edge from top to bottom corner */}
+        <div className="w-full lg:w-72 lg:fixed lg:left-0 lg:top-[80px] lg:bottom-0 lg:h-auto lg:overflow-y-auto space-y-6 bg-slate-900 p-6 rounded-none border-r border-slate-800 shadow-none text-[12px] z-20 text-slate-100">
+          
+          <div>
+            <h4 className="text-[11px] font-extrabold uppercase tracking-widest text-slate-400 mb-3 px-2">Main Menu</h4>
+            <div className="relative mb-4">
+              <Search className="absolute left-3.5 top-3 w-4 h-4 text-slate-400" />
+              <input
+                type="text"
+                placeholder="Search Assets..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full bg-slate-800 border border-slate-700 rounded-xl pl-10 pr-3 py-2.5 text-[12px] text-white placeholder-slate-400 focus:outline-none focus:border-[#EE7D1B] transition-all"
+              />
+            </div>
           </div>
 
           <div className="space-y-2">
-            <h3 className="text-[12px] font-black uppercase tracking-wider text-slate-900 flex items-center justify-between">
+            <h3 className="text-[11px] font-black uppercase tracking-wider text-slate-400 px-2 mb-2 flex items-center justify-between">
               <span>Categories</span>
-              <Filter className="w-3.5 h-3.5 text-slate-500" />
+              <Filter className="w-3.5 h-3.5 text-slate-400" />
             </h3>
-            <div className="space-y-1.5">
+            <div className="space-y-1">
               {categories.map((cat) => {
                 const isSelected = selectedCategory === cat.name;
                 return (
                   <div
                     key={cat.name}
                     onClick={() => { setSelectedCategory(cat.name); setPage(1); }}
-                    className="flex items-center justify-between text-[12px] font-medium text-slate-700 cursor-pointer py-1"
+                    className={`flex items-center justify-between px-3 py-2 rounded-xl text-[12px] font-medium cursor-pointer transition-all ${
+                      isSelected 
+                        ? 'bg-[#EE7D1B] text-white font-bold shadow-md shadow-orange-500/20' 
+                        : 'text-slate-300 hover:bg-slate-800 hover:text-white'
+                    }`}
                   >
                     <div className="flex items-center gap-2.5">
-                      <div className={`w-4 h-4 rounded border flex items-center justify-center transition-all ${isSelected ? 'bg-[#001FD1] border-[#001FD1] text-white' : 'border-slate-300 bg-white'}`}>
-                        {isSelected && <Check className="w-2.5 h-2.5 text-white" />}
-                      </div>
-                      <span className={isSelected ? 'font-bold text-slate-900' : ''}>{cat.name}</span>
+                      <span className={`w-1.5 h-1.5 rounded-full ${isSelected ? 'bg-white' : 'bg-slate-500'}`}></span>
+                      <span>{cat.name}</span>
                     </div>
-                    <span className="text-[12px] text-slate-400">({cat.count})</span>
+                    <span className={`text-[11px] px-1.5 py-0.5 rounded-md ${isSelected ? 'bg-white/20 text-white' : 'bg-slate-800 text-slate-400'}`}>
+                      {cat.count}
+                    </span>
                   </div>
                 );
               })}
             </div>
           </div>
 
-          <div className="space-y-2 pt-3 border-t border-slate-200">
-            <h3 className="text-[12px] font-black uppercase tracking-wider text-slate-900">Pricing Type</h3>
-            <div className="space-y-1.5">
+          <div className="space-y-2 pt-4 border-t border-slate-800">
+            <h3 className="text-[11px] font-black uppercase tracking-wider text-slate-400 px-2 mb-2">Pricing Type</h3>
+            <div className="space-y-1">
               {types.map((type) => {
                 const isSelected = selectedType === type.name;
                 return (
                   <div
                     key={type.name}
                     onClick={() => { setSelectedType(type.name); setPage(1); }}
-                    className="flex items-center justify-between text-[12px] font-medium text-slate-700 cursor-pointer py-1"
+                    className={`flex items-center justify-between px-3 py-2 rounded-xl text-[12px] font-medium cursor-pointer transition-all ${
+                      isSelected 
+                        ? 'bg-[#EE7D1B] text-white font-bold shadow-md shadow-orange-500/20' 
+                        : 'text-slate-300 hover:bg-slate-800 hover:text-white'
+                    }`}
                   >
                     <div className="flex items-center gap-2.5">
-                      <div className={`w-4 h-4 rounded border flex items-center justify-center transition-all ${isSelected ? 'bg-[#001FD1] border-[#001FD1] text-white' : 'border-slate-300 bg-white'}`}>
-                        {isSelected && <Check className="w-2.5 h-2.5 text-white" />}
-                      </div>
-                      <span className={isSelected ? 'font-bold text-slate-900' : ''}>{type.name}</span>
+                      <span className={`w-1.5 h-1.5 rounded-full ${isSelected ? 'bg-white' : 'bg-slate-500'}`}></span>
+                      <span>{type.name}</span>
                     </div>
-                    <span className="text-[12px] text-slate-400">({type.count})</span>
+                    <span className={`text-[11px] px-1.5 py-0.5 rounded-md ${isSelected ? 'bg-white/20 text-white' : 'bg-slate-800 text-slate-400'}`}>
+                      {type.count}
+                    </span>
                   </div>
                 );
               })}
             </div>
           </div>
+
         </div>
-      </div>
 
-        <div className="lg:col-span-3 space-y-4 w-full">
-          <div className="flex items-center justify-between bg-slate-50 px-4 py-2.5 rounded-xl border border-slate-200 text-[12px]">
-            <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-[#001FD1]"></span>
-              <span className="font-bold text-slate-700">{total} Items</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <div className="p-1 rounded bg-[#001FD1] text-white shadow-xs">
-                <Grid className="w-3.5 h-3.5" />
-              </div>
-            </div>
-          </div>
+        {/* Right Content Column */}
+        <div className="w-full lg:ml-80 lg:flex-1 space-y-6 min-w-0">
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 w-full">
             {filteredAssets.map((asset) => (
               <AssetCard
                 key={asset._id || asset.id}
@@ -279,7 +283,7 @@ export default function AssetHub() {
           </div>
 
           {filteredAssets.length === 0 && (
-            <div className="text-center py-16 bg-slate-50 rounded-xl border border-slate-200 text-[12px]">
+            <div className="text-center py-16 text-[12px]">
               <p className="text-slate-500 font-bold">No digital assets found matching your selected filters.</p>
             </div>
           )}
@@ -299,7 +303,7 @@ export default function AssetHub() {
                   key={pNum}
                   onClick={() => setPage(pNum)}
                   className={`w-9 h-9 rounded-lg font-black transition-all ${
-                    page === pNum ? 'bg-[#001FD1] text-white shadow-sm' : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+                    page === pNum ? 'bg-[#EE7D1B] text-white shadow-sm' : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
                   }`}
                 >
                   {pNum}
@@ -315,7 +319,9 @@ export default function AssetHub() {
               </button>
             </div>
           )}
+
         </div>
+
       </div>
 
       {selectedAsset && (
@@ -339,7 +345,7 @@ export default function AssetHub() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 items-start">
               <div className="space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-200">
                 <h4 className="font-black uppercase tracking-wider text-slate-900 flex items-center gap-1.5">
-                  <MessageSquare className="w-4 h-4 text-[#001FD1]" />
+                  <MessageSquare className="w-4 h-4 text-[#EE7D1B]" />
                   <span>Reviews ({reviews.length})</span>
                 </h4>
 
@@ -363,7 +369,7 @@ export default function AssetHub() {
                     value={newComment}
                     onChange={(e) => setNewComment(e.target.value)}
                     placeholder="Write a review..."
-                    className="w-full bg-white border border-slate-200 rounded-lg p-2.5 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#001FD1]"
+                    className="w-full bg-white border border-slate-200 rounded-lg p-2.5 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#EE7D1B]"
                   />
                   {reviewError && <p className="text-red-600 font-bold">{reviewError}</p>}
                   <button
@@ -427,7 +433,7 @@ export default function AssetHub() {
 
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="px-2.5 py-1 rounded bg-blue-50 text-[#001FD1] border border-blue-200 font-black uppercase tracking-wider text-[11px]">
+                    <span className="px-2.5 py-1 rounded bg-orange-50 text-[#EE7D1B] border border-orange-200 font-black uppercase tracking-wider text-[11px]">
                       {selectedAsset.category}
                     </span>
                     <span className="text-lg font-black text-slate-900">${selectedAsset.price || 0}</span>
@@ -450,7 +456,7 @@ export default function AssetHub() {
                         handleDownloadAsset(selectedAsset);
                         setSelectedAsset(null);
                       }}
-                      className="w-full py-3 rounded-xl bg-[#001FD1] hover:bg-blue-800 text-white font-black uppercase tracking-wider flex items-center justify-center gap-2 shadow-sm transition-all text-[12px]"
+                      className="w-full py-3 rounded-xl bg-[#EE7D1B] hover:bg-orange-600 text-white font-black uppercase tracking-wider flex items-center justify-center gap-2 shadow-sm transition-all text-[12px]"
                     >
                       <Download className="w-4 h-4 text-white" />
                       <span>{!selectedAsset.price || selectedAsset.price === 0 || selectedAsset.isFree ? 'Download Free Asset' : `Checkout ($${selectedAsset.price})`}</span>
