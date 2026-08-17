@@ -19,7 +19,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { authAPI, courseAPI, assetAPI, paymentAPI, editingOrdersAPI } from '../services/api';
+import { authAPI, courseAPI, assetAPI, paymentAPI, editingOrdersAPI, serviceAPI } from '../services/api';
 
 export default function Dashboard() {
   const { user, refreshProfile } = useAuth();
@@ -29,6 +29,10 @@ export default function Dashboard() {
   const [allCourses, setAllCourses] = useState([]);
   const [allAssets, setAllAssets] = useState([]);
   const [editingOrders, setEditingOrders] = useState([]);
+  const [serviceInquiries, setServiceInquiries] = useState([]);
+  const [inquiriesLoading, setInquiriesLoading] = useState(true);
+  const [inquiriesError, setInquiriesError] = useState('');
+  const [selectedInquiry, setSelectedInquiry] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
 
   const [firstName, setFirstName] = useState('');
@@ -51,12 +55,15 @@ export default function Dashboard() {
     let isMounted = true;
 
     const fetchDashboardData = async () => {
+      setInquiriesLoading(true);
+      setInquiriesError('');
       try {
-        const [profileRes, coursesRes, assetsRes, ordersRes] = await Promise.all([
+        const [profileRes, coursesRes, assetsRes, ordersRes, myInquiriesRes] = await Promise.all([
           authAPI.getProfile().catch(() => ({ data: user })),
           courseAPI.getCourses().catch(() => ({ data: [] })),
           assetAPI.getAssets().catch(() => ({ data: [] })),
-          editingOrdersAPI.getMyOrders().catch(() => ({ data: [] }))
+          editingOrdersAPI.getMyOrders().catch(() => ({ data: [] })),
+          serviceAPI.getMyInquiries().catch(() => ({ data: [] }))
         ]);
 
         if (!isMounted) return;
@@ -71,11 +78,42 @@ export default function Dashboard() {
         setAllCourses(coursesRes.data || []);
         setAllAssets(assetsRes.data?.assets || assetsRes.data || []);
         setEditingOrders(ordersRes.data || []);
+
+        const rawInquiries = myInquiriesRes.data?.inquiries || myInquiriesRes.data?.data || myInquiriesRes.data || [];
+        const userEmail = (profileData.email || user?.email || '').toLowerCase();
+        const userId = profileData._id || profileData.id || user?._id || user?.id;
+
+        // Filter strictly for the logged-in user's own service inquiries (by email or userId if present)
+        const myFilteredInquiries = rawInquiries.filter(item => {
+          if (!item) return false;
+          const itemEmail = (item.email || '').toLowerCase();
+          const itemUserId = item.user || item.userId || item.clientId;
+          if (userEmail && itemEmail && itemEmail === userEmail) return true;
+          if (userId && itemUserId && String(itemUserId) === String(userId)) return true;
+          // If neither email nor userId is attached to the inquiry schema but it came from my-inquiries endpoint,
+          // the backend endpoint already filtered it by the JWT token.
+          if (!itemEmail && !itemUserId) return true;
+          return false;
+        });
+
+        // Fallback: if backend returned empty array or error, check localStorage for locally submitted inquiries by this user
+        const localInquiries = JSON.parse(localStorage.getItem('my_service_inquiries') || '[]');
+        const myLocalInquiries = userEmail 
+          ? localInquiries.filter(item => (item.email || '').toLowerCase() === userEmail)
+          : localInquiries;
+
+        const combined = [...myFilteredInquiries, ...myLocalInquiries];
+        const uniqueInquiries = Array.from(new Map(combined.map(item => [item._id || item.id, item])).values());
+        
+        setServiceInquiries(uniqueInquiries);
       } catch (err) {
         if (!isMounted) return;
-        console.error('Failed to load dashboard profile:', err);
+        console.error('Failed to load dashboard data:', err);
         setError('Failed to load profile details from server.');
+        setInquiriesError('Failed to load your service inquiries from the server.');
         setProfile(user || {});
+      } finally {
+        if (isMounted) setInquiriesLoading(false);
       }
     };
 
@@ -534,18 +572,7 @@ export default function Dashboard() {
               )}
             </div>
 
-            <div className="bg-white rounded-2xl p-5 border border-indigo-100 shadow-sm space-y-3">
-              <div className="flex items-center space-x-2 border-b border-slate-100 pb-2.5">
-                <Sparkles className="w-4 h-4 text-amber-500" />
-                <h2 className="text-xs font-black text-slate-900 uppercase tracking-wide">Quick Support & Services</h2>
-              </div>
-              <p className="text-[11px] text-slate-500 leading-relaxed font-medium">
-                Need customized software design, hosting assistance, or code review services?
-              </p>
-              <button onClick={() => navigate('/services')} className="w-full py-2 rounded-xl bg-[#6B7CFF] hover:bg-indigo-600 text-white font-extrabold text-[11px] uppercase tracking-wider shadow-sm transition-all">
-                Request Custom Service
-              </button>
-            </div>
+
 
             <div className="bg-white rounded-2xl p-5 border border-indigo-100 shadow-sm space-y-3">
               <div className="flex items-center space-x-2 border-b border-slate-100 pb-2.5">
@@ -569,11 +596,206 @@ export default function Dashboard() {
               </ul>
             </div>
 
+            {/* My Service Inquiries Section (Right Side Column) */}
+            <div className="bg-white rounded-2xl p-5 border border-indigo-100 shadow-sm space-y-4">
+              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                <div className="flex items-center space-x-2">
+                  <Sparkles className="w-4 h-4 text-sky-500" />
+                  <h2 className="text-xs font-black text-slate-900 uppercase tracking-wide">My Service Inquiries</h2>
+                </div>
+                <span className="text-[11px] font-black text-sky-600 bg-sky-50 px-2.5 py-1 rounded-full">
+                  {serviceInquiries.length} Inquiries
+                </span>
+              </div>
+
+              {inquiriesLoading ? (
+                <div className="text-center py-8 space-y-2">
+                  <div className="w-6 h-6 border-2 border-sky-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
+                  <p className="text-[11px] text-slate-400 font-medium">Loading your service inquiries...</p>
+                </div>
+              ) : inquiriesError ? (
+                <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-center space-y-2">
+                  <p className="text-[11px] text-rose-700 font-medium">{inquiriesError}</p>
+                  <button
+                    onClick={() => window.location.reload()}
+                    className="px-3 py-1 bg-rose-600 text-white rounded-lg text-[10px] font-bold hover:bg-rose-700 transition-all"
+                  >
+                    Retry
+                  </button>
+                </div>
+              ) : serviceInquiries.length > 0 ? (
+                <div className="space-y-3.5 max-h-[500px] overflow-y-auto pr-1">
+                  {serviceInquiries.map((inq) => (
+                    <div 
+                      key={inq._id || inq.id} 
+                      onClick={() => setSelectedInquiry(inq)}
+                      className="p-4 rounded-xl border border-slate-200/80 bg-gradient-to-br from-slate-50/80 to-white space-y-3 shadow-xs hover:border-sky-400 hover:shadow-md cursor-pointer transition-all group"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <span className="font-extrabold text-slate-900 text-xs group-hover:text-sky-600 transition-colors">{inq.serviceType}</span>
+                          <span className={`text-[9px] font-black uppercase px-2 py-0.5 rounded ${
+                            inq.status === 'contacted' ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' :
+                            inq.status === 'resolved' ? 'bg-blue-100 text-blue-800 border border-blue-200' :
+                            inq.status === 'rejected' ? 'bg-rose-100 text-rose-800 border border-rose-200' :
+                            'bg-amber-100 text-amber-800 border border-amber-200'
+                          }`}>
+                            {inq.status || 'pending'}
+                          </span>
+                        </div>
+                        <span className="text-[10px] text-slate-400 font-medium">
+                          {inq.createdAt ? new Date(inq.createdAt).toLocaleDateString() : ''}
+                        </span>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-2 text-[11px] text-slate-600 bg-white p-2.5 rounded-lg border border-slate-100">
+                        <div><span className="font-bold text-slate-700">Budget:</span> <span className="text-emerald-600 font-extrabold">{inq.budget || 'N/A'}</span></div>
+                        <div className="text-right text-[10px] text-sky-600 font-bold group-hover:underline">Click to view full details →</div>
+                      </div>
+
+                      {inq.message && (
+                        <div className="text-[11px] text-slate-600 bg-white p-2.5 rounded-lg border border-slate-100 line-clamp-2">
+                          <span className="font-bold text-slate-700">Message:</span> <span className="italic text-slate-800">“{inq.message}”</span>
+                        </div>
+                      )}
+
+                      {inq.adminReply ? (
+                        <div className="p-3 rounded-xl bg-gradient-to-r from-sky-50 to-indigo-50 border-l-4 border-sky-400 border border-sky-100 text-[11px] text-slate-900 space-y-1">
+                          <div className="font-extrabold flex items-center gap-1.5 text-sky-700 uppercase tracking-wide text-[10px]">
+                            <Sparkles className="w-3 h-3 text-sky-500" /> Admin Reply Received:
+                          </div>
+                          <p className="font-medium text-slate-800 line-clamp-2">{inq.adminReply}</p>
+                          {inq.repliedAt && (
+                            <p className="text-[9px] text-slate-400 text-right">
+                              Replied: {new Date(inq.repliedAt).toLocaleDateString()}
+                            </p>
+                          )}
+                        </div>
+                      ) : (
+                        <div className="p-2 rounded-lg bg-amber-50/60 border border-amber-200/60 text-[11px] text-amber-800 flex items-center justify-between">
+                          <span className="font-medium">Status: Under Review</span>
+                          <span className="text-[9px] font-bold uppercase bg-amber-100 px-2 py-0.5 rounded text-amber-900">Pending</span>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-8 space-y-3">
+                  <div className="w-12 h-12 bg-sky-50 rounded-full flex items-center justify-center mx-auto text-sky-500">
+                    <Sparkles className="w-6 h-6" />
+                  </div>
+                  <p className="text-slate-500 text-xs font-medium">You have not submitted any service inquiries yet.</p>
+                  <button 
+                    onClick={() => navigate('/services')}
+                    className="px-4 py-2 bg-[#6B7CFF] text-white rounded-xl text-xs font-bold hover:bg-indigo-600 transition-all shadow-sm"
+                  >
+                    Request Custom Service
+                  </button>
+                </div>
+              )}
+            </div>
+
           </div>
 
         </div>
 
       </div>
+
+      {/* FULL INQUIRY DETAILS MODAL */}
+      {selectedInquiry && (
+        <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl max-w-lg w-full p-6 space-y-5 shadow-2xl border border-indigo-100 animate-fade-in relative">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div className="flex items-center space-x-2">
+                <Sparkles className="w-5 h-5 text-sky-500" />
+                <h3 className="text-sm font-black text-slate-900 uppercase tracking-wide">Service Inquiry Full Details</h3>
+              </div>
+              <button 
+                onClick={() => setSelectedInquiry(null)}
+                className="p-1 rounded-lg text-slate-400 hover:text-slate-900 hover:bg-slate-100 transition-all"
+                aria-label="Close modal"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="space-y-4 text-xs">
+              <div className="grid grid-cols-2 gap-3 bg-slate-50 p-3 rounded-xl border border-slate-100">
+                <div>
+                  <span className="text-slate-400 font-semibold uppercase text-[10px] block">Service Type</span>
+                  <span className="font-extrabold text-slate-900 text-sm mt-0.5 block">{selectedInquiry.serviceType}</span>
+                </div>
+                <div>
+                  <span className="text-slate-400 font-semibold uppercase text-[10px] block">Budget</span>
+                  <span className="font-extrabold text-emerald-600 text-sm mt-0.5 block">{selectedInquiry.budget || 'N/A'}</span>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3 bg-slate-50 p-3 rounded-xl border border-slate-100">
+                <div>
+                  <span className="text-slate-400 font-semibold uppercase text-[10px] block">Status</span>
+                  <span className={`inline-block mt-1 text-[10px] font-black uppercase px-2.5 py-0.5 rounded ${
+                    selectedInquiry.status === 'contacted' ? 'bg-emerald-100 text-emerald-800' :
+                    selectedInquiry.status === 'resolved' ? 'bg-blue-100 text-blue-800' :
+                    selectedInquiry.status === 'rejected' ? 'bg-rose-100 text-rose-800' :
+                    'bg-amber-100 text-amber-800'
+                  }`}>
+                    {selectedInquiry.status || 'pending'}
+                  </span>
+                </div>
+                <div>
+                  <span className="text-slate-400 font-semibold uppercase text-[10px] block">Created Date</span>
+                  <span className="font-bold text-slate-800 mt-1 block">
+                    {selectedInquiry.createdAt ? new Date(selectedInquiry.createdAt).toLocaleString() : 'N/A'}
+                  </span>
+                </div>
+              </div>
+
+              <div className="bg-slate-50 p-3 rounded-xl border border-slate-100 space-y-1">
+                <span className="text-slate-400 font-semibold uppercase text-[10px] block">Client Information</span>
+                <p className="font-bold text-slate-800">{selectedInquiry.name} ({selectedInquiry.email})</p>
+                {selectedInquiry.phone && <p className="text-slate-600">Phone: {selectedInquiry.phone}</p>}
+              </div>
+
+              {selectedInquiry.message && (
+                <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-100 space-y-1">
+                  <span className="text-slate-400 font-semibold uppercase text-[10px] block">Project Message / Requirements</span>
+                  <p className="italic text-slate-800 leading-relaxed bg-white p-2.5 rounded-lg border border-slate-200/60">{selectedInquiry.message}</p>
+                </div>
+              )}
+
+              {selectedInquiry.adminReply ? (
+                <div className="bg-gradient-to-r from-sky-50 to-indigo-50 p-4 rounded-xl border-l-4 border-sky-500 border border-sky-100 space-y-1.5 shadow-inner">
+                  <div className="font-extrabold flex items-center gap-1.5 text-sky-700 uppercase tracking-wide text-[10px]">
+                    <Sparkles className="w-3.5 h-3.5 text-sky-500" /> Admin Official Response & Reply:
+                  </div>
+                  <p className="font-medium text-slate-800 bg-white/90 p-3 rounded-lg border border-sky-100 whitespace-pre-wrap">{selectedInquiry.adminReply}</p>
+                  {selectedInquiry.repliedAt && (
+                    <p className="text-[10px] text-slate-400 text-right pt-1">
+                      Replied on: {new Date(selectedInquiry.repliedAt).toLocaleString()}
+                    </p>
+                  )}
+                </div>
+              ) : (
+                <div className="p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 flex items-center justify-between">
+                  <span className="font-semibold">Status: Awaiting Admin Response</span>
+                  <span className="text-[10px] font-bold uppercase bg-amber-100 px-2.5 py-1 rounded text-amber-900">Pending Review</span>
+                </div>
+              )}
+            </div>
+
+            <div className="flex justify-end pt-2">
+              <button
+                onClick={() => setSelectedInquiry(null)}
+                className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold uppercase tracking-wider transition-all"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -61,7 +61,15 @@ export default function ServiceInquiry() {
 
     setLoading(true);
     try {
-      await serviceAPI.submitInquiry(formData);
+      const res = await serviceAPI.submitInquiry(formData);
+      const newInq = res.data?.inquiry || res.data || {
+        _id: Date.now().toString(),
+        ...formData,
+        status: 'pending',
+        createdAt: new Date().toISOString()
+      };
+      const existing = JSON.parse(localStorage.getItem('my_service_inquiries') || '[]');
+      localStorage.setItem('my_service_inquiries', JSON.stringify([newInq, ...existing]));
       setSubmitted(true);
     } catch (err) {
       console.error('Failed to submit inquiry', err);
