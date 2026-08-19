@@ -10,6 +10,7 @@ export default function Portfolio() {
   const [total, setTotal] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
+  const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
   const [activeVideo, setActiveVideo] = useState(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
@@ -103,8 +104,8 @@ export default function Portfolio() {
       {/* Strict 2-Column Desktop Layout Wrapper (Exact Course Design with Orange Accent) */}
       <div className="relative flex flex-col lg:flex-row items-start gap-8 w-full max-w-7xl mx-auto">
         
-        {/* Left Sidebar: Fixed edge-to-edge from top to bottom corner */}
-        <div className="w-full lg:w-72 lg:fixed lg:left-0 lg:top-[80px] lg:bottom-0 lg:h-auto lg:overflow-y-auto space-y-6 bg-slate-900 p-6 rounded-none border-r border-slate-800 shadow-none text-[12px] z-20 text-slate-100">
+        {/* Left Sidebar: Fixed edge-to-edge from top to bottom corner on desktop, hidden/collapsible on mobile */}
+        <div className="hidden lg:block w-72 lg:fixed lg:left-0 lg:top-[80px] lg:bottom-0 lg:h-auto lg:overflow-y-auto space-y-6 bg-slate-900 p-6 rounded-none border-r border-slate-800 shadow-none text-[12px] z-20 text-slate-100">
           
           <div>
             <h4 className="text-[11px] font-extrabold uppercase tracking-widest text-slate-400 mb-3 px-2">Portfolio Menu</h4>
@@ -155,6 +156,90 @@ export default function Portfolio() {
 
         {/* Right Content Column: Offset to the right on large screens to make room for the fixed sidebar */}
         <div className="w-full lg:ml-80 lg:flex-1 space-y-6 min-w-0">
+
+          {/* Mobile Filter & Search Header */}
+          <div className="block lg:hidden space-y-4 mb-4">
+            <div className="relative">
+              <Search className="absolute left-3.5 top-3 w-4 h-4 text-slate-400" />
+              <input
+                type="text"
+                placeholder="Search Projects..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full bg-slate-900 border border-slate-800 rounded-xl pl-10 pr-4 py-3 text-[12px] text-white placeholder-slate-400 focus:outline-none focus:border-[#EE7D1B]"
+              />
+            </div>
+
+            <div className="flex items-center justify-between gap-2">
+              <button
+                onClick={() => setMobileFilterOpen(!mobileFilterOpen)}
+                className="flex-1 py-2.5 px-4 rounded-xl bg-slate-900 text-white font-black flex items-center justify-center gap-2 shadow-sm text-[12px]"
+              >
+                <Filter className="w-4 h-4 text-[#EE7D1B]" />
+                <span>Filters {selectedCategory !== 'All' ? '• Active' : ''}</span>
+              </button>
+            </div>
+
+            {/* Horizontal Scrollable Category Pills for Mobile */}
+            <div className="flex overflow-x-auto gap-2 pb-1 scrollbar-none">
+              {categories.map((cat) => {
+                const isSelected = selectedCategory === cat.name;
+                return (
+                  <button
+                    key={cat.name}
+                    onClick={() => { setSelectedCategory(cat.name); setPage(1); }}
+                    className={`px-3.5 py-2 rounded-xl text-[11px] font-extrabold whitespace-nowrap transition-all shadow-xs ${
+                      isSelected
+                        ? 'bg-[#EE7D1B] text-white shadow-orange-500/20'
+                        : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                    }`}
+                  >
+                    {cat.name} ({cat.count})
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Mobile Filter Modal / Drawer */}
+            {mobileFilterOpen && (
+              <div className="bg-slate-900 text-white p-5 rounded-2xl space-y-4 border border-slate-800 shadow-xl">
+                <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+                  <h3 className="font-black text-white uppercase tracking-wider text-[12px]">Filter Portfolio</h3>
+                  <button onClick={() => setMobileFilterOpen(false)} className="text-slate-400 hover:text-white font-bold text-xs">✕ Close</button>
+                </div>
+
+                <div className="space-y-2">
+                  <h4 className="text-[11px] font-black uppercase tracking-wider text-slate-400 mb-2">Categories</h4>
+                  <div className="grid grid-cols-2 gap-2">
+                    {categories.map((cat) => {
+                      const isSelected = selectedCategory === cat.name;
+                      return (
+                        <button
+                          key={cat.name}
+                          onClick={() => { setSelectedCategory(cat.name); setPage(1); setMobileFilterOpen(false); }}
+                          className={`py-2 px-3 rounded-xl text-[11px] font-bold text-left flex items-center justify-between transition-all ${
+                            isSelected ? 'bg-[#EE7D1B] text-white' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+                          }`}
+                        >
+                          <span>{cat.name}</span>
+                          <span className="opacity-75">{cat.count}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <div className="pt-2">
+                  <button
+                    onClick={() => { setSelectedCategory('All'); setPage(1); setMobileFilterOpen(false); }}
+                    className="w-full py-2.5 rounded-xl bg-slate-800 text-slate-300 hover:bg-slate-700 font-bold text-[11px]"
+                  >
+                    Reset All Filters
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 w-full">
             {filteredProjects.map((proj) => {
