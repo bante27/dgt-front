@@ -116,8 +116,7 @@ export default function Login() {
             Welcome to MrHaile Portal
           </span>
         </div>
-
-        {/* Absolutely Centered Logo */}
+ {/* Absolutely Centered Logo */}
         <div className="absolute inset-0 m-auto w-full max-w-[420px] h-48 sm:h-60 md:h-72 flex items-center justify-center z-10 pointer-events-none">
           <div className="relative w-full h-full flex items-center justify-center pointer-events-auto">
             {/* Shaded Backdrop Aura */}
@@ -131,12 +130,19 @@ export default function Login() {
         {/* Diagonal Text flanking the logo */}
         <div className="absolute inset-0 m-auto w-full h-full flex items-center justify-between px-4 z-20 pointer-events-none">
           <div className="transform -rotate-12 translate-y-16">
-            <h1 className="text-lg sm:text-base font-black tracking-wider text-yellow-400 drop-shadow-[0_4px_8px_rgba(0,0,0,0.9)] uppercase stroke-black [-webkit-text-stroke:1.5px_black]" style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}>
+            <h1
+              className="text-2xl sm:text-3xl font-black tracking-wider text-yellow-400 drop-shadow-[0_4px_8px_rgba(0,0,0,0.9)] uppercase [-webkit-text-stroke:1.5px_black]"
+              style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
+            >
               GRAPHIC DESIGNING
             </h1>
           </div>
+
           <div className="transform rotate-12 translate-y-16">
-            <h1 className="text-lg sm:text-base font-black tracking-wider text-yellow-400 drop-shadow-[0_4px_8px_rgba(0,0,0,0.9)] uppercase stroke-black [-webkit-text-stroke:1.5px_black]" style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}>
+            <h1
+              className="text-2xl sm:text-3xl font-black tracking-wider text-yellow-400 drop-shadow-[0_4px_8px_rgba(0,0,0,0.9)] uppercase [-webkit-text-stroke:1.5px_black]"
+              style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
+            >
               VIDEO EDITING
             </h1>
           </div>
