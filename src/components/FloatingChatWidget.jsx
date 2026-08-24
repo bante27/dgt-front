@@ -20,39 +20,28 @@ export const FloatingChatWidget = () => {
   const offsetRef = useRef({ x: 0, y: 0 });
   const messagesEndRef = useRef(null);
 
+  // 1. Fetch conversation via REST API on open or token change
   useEffect(() => {
     if (!token) return;
-    const fetchConversation = async () => {
+    const initConversation = async () => {
       try {
         const res = await chatAPI.getConversations();
-        let conv = null;
-        if (res.data.conversation) {
-          conv = res.data.conversation;
-        } else if (res.data.conversations && res.data.conversations.length > 0) {
-          const currentUserId = user?._id || user?.id;
-          conv = res.data.conversations.find(c => {
-            const cUserId = c.userId?._id || c.userId;
-            return cUserId === currentUserId;
-          }) || res.data.conversations[0];
-        } else if (res.data._id) {
-          conv = res.data;
-        }
-
+        const conv = res.data.conversation || (res.data.conversations && res.data.conversations[0]);
         const convId = conv?._id || res.data.conversationId;
         
         if (convId) {
           setConversationId(convId);
           const msgRes = await chatAPI.getMessages(convId);
-          const msgs = msgRes.data.messages || msgRes.data || [];
-          setMessages(msgs);
+          setMessages(msgRes.data.messages || msgRes.data || []);
         }
       } catch (err) {
-        console.error('Failed to load chat conversation', err);
+        console.error('Failed to initialize conversation', err);
       }
     };
-    fetchConversation();
-  }, [token, isOpen, user]);
+    initConversation();
+  }, [token, isOpen]);
 
+  // 2. Join room via Socket and listen for events
   useEffect(() => {
     if (!socket || !conversationId) return;
 
@@ -187,7 +176,7 @@ export const FloatingChatWidget = () => {
   };
 
   const handleDeleteMessage = async (messageId) => {
-    if (socket && conversationId)	{
+    if (socket && conversationId) {
       socket.emit('delete_message', { messageId, conversationId, deleteType: 'everyone' });
     } else {
       try {
@@ -244,7 +233,7 @@ export const FloatingChatWidget = () => {
                 const senderObj = msg.senderId;
                 const senderId = senderObj?._id || senderObj || msg.sender;
                 
-                // Pure client chat mode: if the message was sent by the authenticated user, it's 'me' (right), otherwise support/admin (left)
+                // Strict 1-to-1 ownership: messages sent by current user appear on the right, replies from support appear on the left
                 const isMe = senderId === currentUserId;
                 const isDeleted = Boolean(msg.deletedAt);
 
