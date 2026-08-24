@@ -25,13 +25,10 @@ export const FloatingChatWidget = () => {
     const fetchConversation = async () => {
       try {
         const res = await chatAPI.getConversations();
-        console.log('GET CONVERSATIONS RES:', res.data);
-        
         let conv = null;
         if (res.data.conversation) {
           conv = res.data.conversation;
         } else if (res.data.conversations && res.data.conversations.length > 0) {
-          // For non-admin, find own conversation or pick first
           const currentUserId = user?._id || user?.id;
           conv = res.data.conversations.find(c => {
             const cUserId = c.userId?._id || c.userId;
@@ -46,7 +43,6 @@ export const FloatingChatWidget = () => {
         if (convId) {
           setConversationId(convId);
           const msgRes = await chatAPI.getMessages(convId);
-          console.log('GET MESSAGES RES:', msgRes.data);
           const msgs = msgRes.data.messages || msgRes.data || [];
           setMessages(msgs);
         }
@@ -63,7 +59,6 @@ export const FloatingChatWidget = () => {
     socket.emit('join_conversation', { conversationId });
 
     const handleNewMessage = (message) => {
-      console.log('SOCKET NEW MESSAGE:', message);
       if (message.conversationId === conversationId || !message.conversationId) {
         setMessages((prev) => {
           if (!prev.some((m) => m._id === message._id)) {
@@ -93,16 +88,24 @@ export const FloatingChatWidget = () => {
       );
     };
 
+    const handleMessageRead = ({ messageId }) => {
+      setMessages((prev) =>
+        prev.map(m => m._id === messageId ? { ...m, isRead: true } : m)
+      );
+    };
+
     socket.on('new_message', handleNewMessage);
     socket.on('typing_start', handleTypingStart);
     socket.on('typing_stop', handleTypingStop);
     socket.on('message_deleted', handleMessageDeleted);
+    socket.on('message_read', handleMessageRead);
 
     return () => {
       socket.off('new_message', handleNewMessage);
       socket.off('typing_start', handleTypingStart);
       socket.off('typing_stop', handleTypingStop);
       socket.off('message_deleted', handleMessageDeleted);
+      socket.off('message_read', handleMessageRead);
       socket.emit('leave_conversation', { conversationId });
     };
   }, [socket, conversationId, user]);
@@ -152,13 +155,11 @@ export const FloatingChatWidget = () => {
     setInputText('');
 
     if (socket && conversationId && isConnected) {
-      console.log('SENDING VIA SOCKET:', { conversationId, text: textToSend });
       socket.emit('send_message', { conversationId, text: textToSend });
       socket.emit('typing_stop', { conversationId });
     } else if (conversationId) {
       try {
         const res = await chatAPI.sendMessage(conversationId, { text: textToSend });
-        console.log('SENDING VIA REST:', res.data);
         const newMsg = res.data.message || res.data;
         if (newMsg) {
           setMessages((prev) => {
@@ -243,7 +244,7 @@ export const FloatingChatWidget = () => {
                 const senderObj = msg.senderId;
                 const senderId = senderObj?._id || senderObj || msg.sender;
                 
-                // Strict 1-to-1 ownership check: message is "me" if senderId matches current user ID
+                // Strict client-side check: messages sent by current user are on the right, support/admin messages are on the left
                 const isMe = senderId === currentUserId;
                 const isDeleted = Boolean(msg.deletedAt);
 
