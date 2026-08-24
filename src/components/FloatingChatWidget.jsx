@@ -26,20 +26,36 @@ export const FloatingChatWidget = () => {
       try {
         const res = await chatAPI.getConversations();
         console.log('GET CONVERSATIONS RES:', res.data);
-        const convId = res.data.conversationId || res.data.conversation?._id || (res.data.conversations && res.data.conversations[0]?._id);
+        
+        let conv = null;
+        if (res.data.conversation) {
+          conv = res.data.conversation;
+        } else if (res.data.conversations && res.data.conversations.length > 0) {
+          // For non-admin, find own conversation or pick first
+          const currentUserId = user?._id || user?.id;
+          conv = res.data.conversations.find(c => {
+            const cUserId = c.userId?._id || c.userId;
+            return cUserId === currentUserId;
+          }) || res.data.conversations[0];
+        } else if (res.data._id) {
+          conv = res.data;
+        }
+
+        const convId = conv?._id || res.data.conversationId;
         
         if (convId) {
           setConversationId(convId);
           const msgRes = await chatAPI.getMessages(convId);
           console.log('GET MESSAGES RES:', msgRes.data);
-          setMessages(msgRes.data.messages || msgRes.data || []);
+          const msgs = msgRes.data.messages || msgRes.data || [];
+          setMessages(msgs);
         }
       } catch (err) {
         console.error('Failed to load chat conversation', err);
       }
     };
     fetchConversation();
-  }, [token, isOpen]);
+  }, [token, isOpen, user]);
 
   useEffect(() => {
     if (!socket || !conversationId) return;
@@ -224,8 +240,11 @@ export const FloatingChatWidget = () => {
             ) : (
               messages.map((msg, idx) => {
                 const currentUserId = user?._id || user?.id;
-                const senderId = msg.senderId?._id || msg.senderId || msg.sender;
-                const isMe = senderId === currentUserId || msg.senderRole === 'student' || msg.senderRole === 'superadmin' || msg.senderRole === 'admin' || msg.isAdmin === false;
+                const senderObj = msg.senderId;
+                const senderId = senderObj?._id || senderObj || msg.sender;
+                
+                // Strict 1-to-1 ownership check: message is "me" if senderId matches current user ID
+                const isMe = senderId === currentUserId;
                 const isDeleted = Boolean(msg.deletedAt);
 
                 return (
