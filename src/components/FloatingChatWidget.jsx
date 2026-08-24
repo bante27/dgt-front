@@ -128,7 +128,12 @@ export const FloatingChatWidget = () => {
       try {
         const res = await chatAPI.sendMessage(conversationId, { text: textToSend });
         if (res.data.message) {
-          setMessages((prev) => [...prev, res.data.message]);
+          setMessages((prev) => {
+            if (!prev.some((m) => m._id === res.data.message._id)) {
+              return [...prev, res.data.message];
+            }
+            return prev;
+          });
         }
       } catch (err) {
         console.error('Failed to send message via REST fallback', err);
@@ -199,7 +204,9 @@ export const FloatingChatWidget = () => {
               </div>
             ) : (
               messages.map((msg, idx) => {
-                const isMe = msg.sender === user?._id || msg.sender?._id === user?._id || msg.isAdmin === false;
+                const senderId = msg.sender?._id || msg.sender;
+                const userId = user?._id || user?.id;
+                const isMe = senderId === userId || msg.isAdmin === false;
                 return (
                   <div key={msg._id || idx} className={`flex flex-col ${isMe ? 'items-end' : 'items-start'}`}>
                     <div className={`group relative max-w-[80%] px-3.5 py-2 rounded-2xl text-sm shadow-sm ${
