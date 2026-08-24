@@ -68,7 +68,7 @@ export default function Login() {
       
       {/* Left Branding Panel */}
       <div 
-        className="hidden md:flex md:w-5/12 p-6 sm:p-8 md:p-12 flex-col justify-between items-center min-h-[420px] md:min-h-screen relative overflow-hidden md:sticky md:top-0 md:h-screen border-r border-slate-200/60 bg-cover bg-center bg-no-repeat"
+        className="hidden md:flex md:w-5/12 p-6 sm:p-8 md:p-12 flex-col justify-between items-center min-h-[420px] md:min-h-screen relative overflow-hidden md:sticky md:top-0 md:h-screen border-r border-slate-200/60 bg-[length:100%_100%] bg-center bg-no-repeat"
         style={{
           backgroundImage: 'url(/image.png)',
           backgroundColor: '#e4f8f8'
