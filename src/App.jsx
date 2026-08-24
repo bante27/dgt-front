@@ -5,6 +5,7 @@ import { AuthProvider } from './context/AuthContext';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import CookieConsentBanner from './components/CookieConsentBanner';
+import { FloatingChatWidget } from './components/FloatingChatWidget';
 
 import Home from './pages/Home';
 import Courses from './pages/Courses';
@@ -69,6 +70,7 @@ export default function App() {
           </main>
           <Footer />
           <CookieConsentBanner />
+          <FloatingChatWidget />
         </div>
       </Router>
     </AuthProvider>
