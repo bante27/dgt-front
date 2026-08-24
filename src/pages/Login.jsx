@@ -112,7 +112,7 @@ export default function Login() {
 
         {/* Top Header Badge */}
         <div className="w-full text-center relative z-10 pt-4">
-          <span className="text-[11px] sm:text-xs font-semibold tracking-widest text-orange-600 uppercase bg-orange-100/80 px-3.5 py-1.5 rounded-full border border-orange-200/80 shadow-sm">
+          <span className="text-[13px] sm:text-xs font-semibold tracking-widest text-orange-600 uppercase bg-orange-100/80 px-3.5 py-1.5 rounded-full border border-orange-200/80 shadow-sm">
             Welcome to MrHaile Portal
           </span>
         </div>
@@ -128,14 +128,16 @@ export default function Login() {
           </div>
         </div>
 
-        {/* Diagonal Text at Bottom-Left Corner */}
-        <div className="absolute bottom-46 left-2 z-50 pointer-events-none">
-          <div className="transform -rotate-6 space-y-1">
-            <h1 className="text-base sm:text-lg font-black tracking-wider text-yellow-400 drop-shadow-[0_4px_8px_rgba(0,0,0,0.9)] uppercase stroke-black [-webkit-text-stroke:1.5px_black]" style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}>
-              Graphic Designing 
+        {/* Diagonal Text flanking the logo */}
+        <div className="absolute inset-0 m-auto w-full h-full flex items-center justify-between px-4 z-20 pointer-events-none">
+          <div className="transform -rotate-12 translate-y-16">
+            <h1 className="text-lg sm:text-base font-black tracking-wider text-yellow-400 drop-shadow-[0_4px_8px_rgba(0,0,0,0.9)] uppercase stroke-black [-webkit-text-stroke:1.5px_black]" style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}>
+              GRAPHIC DESIGNING
             </h1>
-            <h1 className="text-base sm:text-lg font-black tracking-wider text-yellow-400 drop-shadow-[0_4px_8px_rgba(0,0,0,0.9)] uppercase stroke-black [-webkit-text-stroke:1.5px_black]" style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}>
-              Video Editing
+          </div>
+          <div className="transform rotate-12 translate-y-16">
+            <h1 className="text-lg sm:text-base font-black tracking-wider text-yellow-400 drop-shadow-[0_4px_8px_rgba(0,0,0,0.9)] uppercase stroke-black [-webkit-text-stroke:1.5px_black]" style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}>
+              VIDEO EDITING
             </h1>
           </div>
         </div>
