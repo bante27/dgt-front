@@ -187,7 +187,7 @@ export const FloatingChatWidget = () => {
   };
 
   const handleDeleteMessage = async (messageId) => {
-    if (socket && conversationId) {
+    if (socket && conversationId)	{
       socket.emit('delete_message', { messageId, conversationId, deleteType: 'everyone' });
     } else {
       try {
@@ -244,7 +244,7 @@ export const FloatingChatWidget = () => {
                 const senderObj = msg.senderId;
                 const senderId = senderObj?._id || senderObj || msg.sender;
                 
-                // Strict client-side check: messages sent by current user are on the right, support/admin messages are on the left
+                // Pure client chat mode: if the message was sent by the authenticated user, it's 'me' (right), otherwise support/admin (left)
                 const isMe = senderId === currentUserId;
                 const isDeleted = Boolean(msg.deletedAt);
 
