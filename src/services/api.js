@@ -105,4 +105,12 @@ export const editingOrdersAPI = {
   updateOrderStatus: (id, status) => api.put(`/editing/orders/${id}/status`, { status }),
 };
 
+export const chatAPI = {
+  getConversations: () => api.get('/conversations'),
+  getMessages: (conversationId) => api.get(`/conversations/${conversationId}/messages`),
+  sendMessage: (conversationId, data) => api.post(`/conversations/${conversationId}/messages`, data),
+  markAsRead: (conversationId) => api.patch(`/conversations/${conversationId}/read`),
+  deleteMessage: (messageId, data) => api.patch(`/messages/${messageId}/delete`, data),
+};
+
 export default api;
