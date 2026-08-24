@@ -106,7 +106,13 @@ export const editingOrdersAPI = {
 };
 
 export const chatAPI = {
-  getConversations: () => api.get('/conversations'),
+  getConversations: async () => {
+    try {
+      return await api.get('/conversations/me');
+    } catch (err) {
+      return await api.get('/conversations');
+    }
+  },
   getMessages: (conversationId) => api.get(`/conversations/${conversationId}/messages`),
   sendMessage: (conversationId, data) => api.post(`/conversations/${conversationId}/messages`, data),
   markAsRead: (conversationId) => api.patch(`/conversations/${conversationId}/read`),
