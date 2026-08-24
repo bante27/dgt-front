@@ -25,22 +25,14 @@ export const FloatingChatWidget = () => {
     const fetchConversation = async () => {
       try {
         const res = await chatAPI.getConversations();
-        let conv = res.data.conversation || (res.data.conversations && res.data.conversations[0]);
+        console.log('GET CONVERSATIONS RES:', res.data);
+        const convId = res.data.conversationId || res.data.conversation?._id || (res.data.conversations && res.data.conversations[0]?._id);
         
-        // If no conversation exists for the user yet, create one via REST or wait for socket
-        if (!conv && res.data.success && !res.data.conversation && (!res.data.conversations || res.data.conversations.length === 0)) {
-          try {
-            const createRes = await chatAPI.getConversations(); // Or POST if backend auto-creates on get
-            conv = createRes.data.conversation || (createRes.data.conversations && createRes.data.conversations[0]);
-          } catch (e) {
-            console.error('Auto conversation creation failed', e);
-          }
-        }
-
-        if (conv && conv._id) {
-          setConversationId(conv._id);
-          const msgRes = await chatAPI.getMessages(conv._id);
-          setMessages(msgRes.data.messages || []);
+        if (convId) {
+          setConversationId(convId);
+          const msgRes = await chatAPI.getMessages(convId);
+          console.log('GET MESSAGES RES:', msgRes.data);
+          setMessages(msgRes.data.messages || msgRes.data || []);
         }
       } catch (err) {
         console.error('Failed to load chat conversation', err);
@@ -55,6 +47,7 @@ export const FloatingChatWidget = () => {
     socket.emit('join_conversation', { conversationId });
 
     const handleNewMessage = (message) => {
+      console.log('SOCKET NEW MESSAGE:', message);
       if (message.conversationId === conversationId || !message.conversationId) {
         setMessages((prev) => {
           if (!prev.some((m) => m._id === message._id)) {
@@ -143,15 +136,18 @@ export const FloatingChatWidget = () => {
     setInputText('');
 
     if (socket && conversationId && isConnected) {
+      console.log('SENDING VIA SOCKET:', { conversationId, text: textToSend });
       socket.emit('send_message', { conversationId, text: textToSend });
       socket.emit('typing_stop', { conversationId });
     } else if (conversationId) {
       try {
         const res = await chatAPI.sendMessage(conversationId, { text: textToSend });
-        if (res.data.message) {
+        console.log('SENDING VIA REST:', res.data);
+        const newMsg = res.data.message || res.data;
+        if (newMsg) {
           setMessages((prev) => {
-            if (!prev.some((m) => m._id === res.data.message._id)) {
-              return [...prev, res.data.message];
+            if (!prev.some((m) => m._id === newMsg._id)) {
+              return [...prev, newMsg];
             }
             return prev;
           });
@@ -229,7 +225,7 @@ export const FloatingChatWidget = () => {
               messages.map((msg, idx) => {
                 const currentUserId = user?._id || user?.id;
                 const senderId = msg.senderId?._id || msg.senderId || msg.sender;
-                const isMe = senderId === currentUserId || msg.senderRole === 'student' || msg.isAdmin === false;
+                const isMe = senderId === currentUserId || msg.senderRole === 'student' || msg.senderRole === 'superadmin' || msg.senderRole === 'admin' || msg.isAdmin === false;
                 const isDeleted = Boolean(msg.deletedAt);
 
                 return (
