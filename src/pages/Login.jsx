@@ -74,10 +74,10 @@ export default function Login() {
           backgroundColor: '#e4f8f8'
         }}
       >
-        {/* Semi-transparent overlay to keep design elements crisp and readable if needed */}
+        {/* Semi-transparent overlay */}
         <div className="absolute inset-0 bg-[#e4f8f8]/30 pointer-events-none z-0"></div>
 
-        {/* Decorative Parallel Wave Lines Pattern matching reference */}
+        {/* Decorative Parallel Wave Lines Pattern */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-30 z-0">
           <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1200" preserveAspectRatio="none">
             <g fill="none" stroke="#28E7D3" strokeWidth="0.8">
@@ -110,27 +110,38 @@ export default function Login() {
           </svg>
         </div>
 
-        {/* Small text added above the bottom-left centered logo */}
+        {/* Top Header Badge */}
         <div className="w-full text-center relative z-10 pt-4">
-          <span className="text-[11px] sm:text-xs font-semibold tracking-widest text-teal-800 uppercase bg-teal-100/60 px-3 py-1 rounded-full border border-teal-200/50">
+          <span className="text-[11px] sm:text-xs font-semibold tracking-widest text-orange-600 uppercase bg-orange-100/80 px-3.5 py-1.5 rounded-full border border-orange-200/80 shadow-sm">
             Welcome to MrHaile Portal
           </span>
         </div>
 
-        {/* Center Main Logo - Extremely Large, Maximum Scale Horizontal Layout with Color Shading/Glow effect */}
-        <div className="w-full max-w-[620px] h-48 sm:h-60 md:h-80 flex items-center justify-center relative z-10 px-4 my-auto">
-          {/* Shaded Backdrop Aura matching theme colors */}
-          <div className="absolute w-56 h-56 sm:w-72 sm:h-72 bg-teal-200/40 rounded-full blur-3xl pointer-events-none -z-10"></div>
-          <div className="absolute w-44 h-44 sm:w-56 sm:h-56 bg-cyan-300/30 rounded-full blur-2xl pointer-events-none -z-10"></div>
-          
-          <Logo className="w-full h-full drop-shadow-2xl filter brightness-105 contrast-110" />
+        {/* Absolutely Centered Logo */}
+        <div className="absolute inset-0 m-auto w-full max-w-[420px] h-48 sm:h-60 md:h-72 flex items-center justify-center z-10 pointer-events-none">
+          <div className="relative w-full h-full flex items-center justify-center pointer-events-auto">
+            {/* Shaded Backdrop Aura */}
+            <div className="absolute inset-0 m-auto w-48 h-48 sm:w-64 sm:h-64 bg-teal-200/50 rounded-full blur-3xl pointer-events-none -z-10"></div>
+            <div className="absolute inset-0 m-auto w-36 h-36 sm:w-48 sm:h-48 bg-cyan-300/40 rounded-full blur-2xl pointer-events-none -z-10"></div>
+            
+            <Logo className="w-full h-full drop-shadow-2xl filter brightness-105 contrast-110" />
+          </div>
         </div>
 
-        {/* Bottom spacing helper */}
-        <div className="w-full relative z-10 pb-2"></div>
+        {/* Diagonal Text at Bottom-Left Corner */}
+        <div className="absolute bottom-46 left-2 z-50 pointer-events-none">
+          <div className="transform -rotate-6 space-y-1">
+            <h1 className="text-base sm:text-lg font-black tracking-wider text-yellow-400 drop-shadow-[0_4px_8px_rgba(0,0,0,0.9)] uppercase stroke-black [-webkit-text-stroke:1.5px_black]" style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}>
+              Graphic Designing 
+            </h1>
+            <h1 className="text-base sm:text-lg font-black tracking-wider text-yellow-400 drop-shadow-[0_4px_8px_rgba(0,0,0,0.9)] uppercase stroke-black [-webkit-text-stroke:1.5px_black]" style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}>
+              Video Editing
+            </h1>
+          </div>
+        </div>
       </div>
 
-      {/* Right Form Area with Sticky Sign In Button Container */}
+      {/* Right Form Area */}
       <div className="w-full md:w-7/12 bg-white flex items-center justify-center p-6 sm:p-10 lg:p-4">
         <div className="max-w-md w-full space-y-6">
           
@@ -192,8 +203,8 @@ export default function Login() {
               </div>
             </div>
 
-            {/* Sticky/Fixed Position Sign In Action Button Container */}
-            <div className="sticky bottom-4 z-20 pt-2 bg-white/90 backdrop-blur-md pb-2">
+            {/* Sign In Action Button Container */}
+            <div className="pt-2">
               <button
                 type="submit"
                 disabled={loading}
@@ -204,9 +215,8 @@ export default function Login() {
             </div>
           </form>
 
-          {/* Sign Up Link */}
+          {/* Sign Up Link & Socials */}
           <div className="space-y-4 pt-2">
-            {/* Divider & Social Login */}
             <div className="relative flex py-1 items-center">
               <div className="flex-grow border-t border-slate-200"></div>
               <span className="flex-shrink mx-4 text-xs text-slate-400 font-medium">Or continue with</span>
