@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { MessageSquare, X, Send, Trash2, GripVertical, CheckCheck } from 'lucide-react';
+import { MessageSquare, X, Send, Trash2, GripVertical } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useSocket } from '../hooks/useSocket';
-import axios from 'axios';
+import { chatAPI } from '../services/api';
 
 export const FloatingChatWidget = () => {
   const { token, user } = useAuth();
@@ -14,27 +14,21 @@ export const FloatingChatWidget = () => {
   const [conversationId, setConversationId] = useState(null);
   const [typingUser, setTypingUser] = useState(null);
 
-  // Position for draggable/movable widget, default to bottom-right
   const [position, setPosition] = useState({ x: window.innerWidth - 80, y: window.innerHeight - 100 });
   const [isDragging, setIsDragging] = useState(false);
   const dragRef = useRef(null);
   const offsetRef = useRef({ x: 0, y: 0 });
   const messagesEndRef = useRef(null);
 
-  // Load conversation on open or token change
   useEffect(() => {
     if (!token) return;
     const fetchConversation = async () => {
       try {
-        const res = await axios.get('http://localhost:5000/api/conversations', {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        const res = await chatAPI.getConversations();
         const conv = res.data.conversation || (res.data.conversations && res.data.conversations[0]);
         if (conv && conv._id) {
           setConversationId(conv._id);
-          const msgRes = await axios.get(`http://localhost:5000/api/conversations/${conv._id}/messages`, {
-            headers: { Authorization: `Bearer ${token}` }
-          });
+          const msgRes = await chatAPI.getMessages(conv._id);
           setMessages(msgRes.data.messages || []);
         }
       } catch (err) {
@@ -44,7 +38,6 @@ export const FloatingChatWidget = () => {
     fetchConversation();
   }, [token, isOpen]);
 
-  // Socket event listeners
   useEffect(() => {
     if (!socket || !conversationId) return;
 
@@ -84,14 +77,12 @@ export const FloatingChatWidget = () => {
     };
   }, [socket, conversationId]);
 
-  // Scroll to bottom when messages update
   useEffect(() => {
     if (isOpen) {
       messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }
   }, [messages, isOpen]);
 
-  // Dragging logic
   const handleMouseDown = (e) => {
     setIsDragging(true);
     offsetRef.current = {
@@ -135,11 +126,7 @@ export const FloatingChatWidget = () => {
       socket.emit('typing_stop', { conversationId });
     } else if (conversationId) {
       try {
-        const res = await axios.post(`http://localhost:5000/api/conversations/${conversationId}/messages`, {
-          text: textToSend
-        }, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        const res = await chatAPI.sendMessage(conversationId, { text: textToSend });
         if (res.data.message) {
           setMessages((prev) => [...prev, res.data.message]);
         }
@@ -153,7 +140,6 @@ export const FloatingChatWidget = () => {
     setInputText(e.target.value);
     if (socket && conversationId) {
       socket.emit('typing_start', { conversationId });
-      // clear typing after 2s of inactivity
       clearTimeout(window.typingTimer);
       window.typingTimer = setTimeout(() => {
         socket.emit('typing_stop', { conversationId });
@@ -166,11 +152,7 @@ export const FloatingChatWidget = () => {
       socket.emit('delete_message', { messageId, conversationId, deleteType: 'everyone' });
     } else {
       try {
-        await axios.patch(`http://localhost:5000/api/messages/${messageId}/delete`, {
-          deleteType: 'everyone'
-        }, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        await chatAPI.deleteMessage(messageId, { deleteType: 'everyone' });
         setMessages((prev) => prev.filter((m) => m._id !== messageId));
       } catch (err) {
         console.error('Failed to delete message', err);
@@ -185,10 +167,8 @@ export const FloatingChatWidget = () => {
       style={{ left: `${position.x}px`, top: `${position.y}px` }}
       className="fixed z-50 flex flex-col items-end select-none"
     >
-      {/* Chat Window */}
       {isOpen && (
         <div className="absolute bottom-16 right-0 w-80 sm:w-96 h-[500px] bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl shadow-2xl flex flex-col overflow-hidden transition-all duration-200">
-          {/* Header */}
           <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-4 py-3 flex items-center justify-between cursor-move"
                onMouseDown={handleMouseDown}
                ref={dragRef}
@@ -211,7 +191,6 @@ export const FloatingChatWidget = () => {
             </button>
           </div>
 
-          {/* Messages Body */}
           <div className="flex-1 p-4 overflow-y-auto space-y-3 bg-gray-50 dark:bg-gray-950/50">
             {messages.length === 0 ? (
               <div className="h-full flex flex-col items-center justify-center text-center text-gray-400 text-sm p-6">
@@ -230,7 +209,6 @@ export const FloatingChatWidget = () => {
                     }`}>
                       <p className="break-words">{msg.text}</p>
                       
-                      {/* Delete button on hover */}
                       {isMe && (
                         <button 
                           onClick={() => handleDeleteMessage(msg._id)}
@@ -256,7 +234,6 @@ export const FloatingChatWidget = () => {
             <div ref={messagesEndRef} />
           </div>
 
-          {/* Input Footer */}
           <form onSubmit={handleSend} className="p-3 bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800 flex items-center space-x-2">
             <input 
               type="text"
@@ -276,7 +253,6 @@ export const FloatingChatWidget = () => {
         </div>
       )}
 
-      {/* Floating Button */}
       <button 
         onClick={() => setIsOpen(!isOpen)}
         onMouseDown={handleMouseDown}
