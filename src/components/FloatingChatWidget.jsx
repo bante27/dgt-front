@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { MessageSquare, X, Send, Trash2, GripVertical, CheckCheck } from 'lucide-react';
+import { MessageSquare, X, Send, Trash2, GripVertical } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useSocket } from '../hooks/useSocket';
 import { chatAPI } from '../services/api';
@@ -218,7 +218,7 @@ export const FloatingChatWidget = () => {
               messages.map((msg, idx) => {
                 const currentUserId = user?._id || user?.id;
                 const senderId = msg.senderId?._id || msg.senderId || msg.sender;
-                const isMe = senderId === currentUserId || msg.isAdmin === false;
+                const isMe = senderId === currentUserId || msg.senderRole === 'student' || msg.isAdmin === false;
                 const isDeleted = Boolean(msg.deletedAt);
 
                 return (
