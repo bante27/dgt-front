@@ -18,7 +18,6 @@ import {
   KeyRound
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { useSocket } from '../hooks/useSocket';
 import { useNavigate } from 'react-router-dom';
 import { authAPI, courseAPI, assetAPI, paymentAPI, editingOrdersAPI, serviceAPI } from '../services/api';
 
@@ -47,51 +46,10 @@ export default function Dashboard() {
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
 
-  // Real-time socket updates for dashboard order plans & inquiries status
-  const token = localStorage.getItem('token') || (user && user.token);
-  const { socket, isConnected } = useSocket(token);
-
   // Payment code verification / simulation state
   const [paymentCode, setPaymentCode] = useState('');
   const [paymentLoading, setPaymentLoading] = useState(false);
   const [paymentFeedback, setPaymentFeedback] = useState('');
-
-  useEffect(() => {
-    if (!socket) return;
-
-    const handleOrderUpdated = (updatedOrder) => {
-      setEditingOrders(prev => {
-        const exists = prev.some(ord => String(ord._id || ord.id) === String(updatedOrder._id || updatedOrder.id));
-        if (exists) {
-          return prev.map(ord => String(ord._id || ord.id) === String(updatedOrder._id || updatedOrder.id) ? updatedOrder : ord);
-        }
-        return [updatedOrder, ...prev];
-      });
-    };
-
-    const handleInquiryUpdated = (updatedInq) => {
-      setServiceInquiries(prev => {
-        const exists = prev.some(inq => String(inq._id || inq.id) === String(updatedInq._id || updatedInq.id));
-        if (exists) {
-          return prev.map(inq => String(inq._id || inq.id) === String(updatedInq._id || updatedInq.id) ? updatedInq : inq);
-        }
-        return [updatedInq, ...prev];
-      });
-      setSelectedInquiry(curr => (curr && String(curr._id || curr.id) === String(updatedInq._id || updatedInq.id) ? updatedInq : curr));
-    };
-
-    socket.on('editingOrderUpdated', handleOrderUpdated);
-    socket.on('serviceInquiryUpdated', handleInquiryUpdated);
-    socket.on('orderStatusChanged', handleOrderUpdated);
-    socket.on('inquiryStatusChanged', handleInquiryUpdated);
-
-    return () => {
-      socket.off('editingOrderUpdated', handleOrderUpdated);
-      socket.off('serviceInquiryUpdated', handleInquiryUpdated);
-      socket.off('orderStatusChanged', handleOrderUpdated);
-      socket.off('inquiryStatusChanged', handleInquiryUpdated);
-    };
-  }, [socket]);
 
   useEffect(() => {
     let isMounted = true;
@@ -119,36 +77,37 @@ export default function Dashboard() {
 
         setAllCourses(coursesRes.data || []);
         setAllAssets(assetsRes.data?.assets || assetsRes.data || []);
-        
-        // Real orders from API/database (no mock fallback data)
-        const apiOrders = ordersRes.data?.orders || ordersRes.data || [];
-        setEditingOrders(Array.isArray(apiOrders) ? apiOrders : []);
+        setEditingOrders(ordersRes.data || []);
 
+        // Use serviceAPI.getMyInquiries() exclusively to fetch only the logged-in user's inquiries
         const rawInquiries = myInquiriesRes.data?.inquiries || myInquiriesRes.data?.data || myInquiriesRes.data || [];
-        const userEmail = (profileData.email || user?.email || '').toLowerCase();
+        const userEmail = (profileData.email || user?.email || '').toLowerCase().trim();
         const userId = profileData._id || profileData.id || user?._id || user?.id;
 
-        // Filter strictly for the logged-in user's own service inquiries (by email or userId if present)
-        const myFilteredInquiries = rawInquiries.filter(item => {
+        const localInquiries = JSON.parse(localStorage.getItem('my_service_inquiries') || '[]');
+        const localUserInquiries = localInquiries.filter(item => {
           if (!item) return false;
-          const itemEmail = (item.email || '').toLowerCase();
+          const itemEmail = (item.email || '').toLowerCase().trim();
           const itemUserId = item.user || item.userId || item.clientId;
           if (userEmail && itemEmail && itemEmail === userEmail) return true;
           if (userId && itemUserId && String(itemUserId) === String(userId)) return true;
-          // If neither email nor userId is attached to the inquiry schema but it came from my-inquiries endpoint,
-          // the backend endpoint already filtered it by the JWT token.
-          if (!itemEmail && !itemUserId) return true;
           return false;
         });
 
-        // Fallback: if backend returned empty array or error, check localStorage for locally submitted inquiries by this user
-        const localInquiries = JSON.parse(localStorage.getItem('my_service_inquiries') || '[]');
-        const myLocalInquiries = userEmail 
-          ? localInquiries.filter(item => (item.email || '').toLowerCase() === userEmail)
-          : localInquiries;
+        const combined = [...rawInquiries, ...localUserInquiries];
 
-        const combined = [...myFilteredInquiries, ...myLocalInquiries];
-        const uniqueInquiries = Array.from(new Map(combined.map(item => [item._id || item.id, item])).values());
+        // Final strict user filter by ID or Email
+        const myStrictInquiries = combined.filter(item => {
+          if (!item) return false;
+          const itemEmail = (item.email || '').toLowerCase().trim();
+          const itemUserId = item.user || item.userId || item.clientId;
+          
+          if (userEmail && itemEmail && itemEmail === userEmail) return true;
+          if (userId && itemUserId && String(itemUserId) === String(userId)) return true;
+          return false;
+        });
+
+        const uniqueInquiries = Array.from(new Map(myStrictInquiries.map(item => [item._id || item.id, item])).values());
         
         setServiceInquiries(uniqueInquiries);
       } catch (err) {
