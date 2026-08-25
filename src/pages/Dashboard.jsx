@@ -77,7 +77,10 @@ export default function Dashboard() {
 
         setAllCourses(coursesRes.data || []);
         setAllAssets(assetsRes.data?.assets || assetsRes.data || []);
-        setEditingOrders(ordersRes.data || []);
+        
+        // Real orders from API/database (no mock fallback data)
+        const apiOrders = ordersRes.data?.orders || ordersRes.data || [];
+        setEditingOrders(Array.isArray(apiOrders) ? apiOrders : []);
 
         const rawInquiries = myInquiriesRes.data?.inquiries || myInquiriesRes.data?.data || myInquiriesRes.data || [];
         const userEmail = (profileData.email || user?.email || '').toLowerCase();
