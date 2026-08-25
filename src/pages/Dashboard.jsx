@@ -18,6 +18,7 @@ import {
   KeyRound
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { useSocket } from '../hooks/useSocket';
 import { useNavigate } from 'react-router-dom';
 import { authAPI, courseAPI, assetAPI, paymentAPI, editingOrdersAPI, serviceAPI } from '../services/api';
 
@@ -46,10 +47,51 @@ export default function Dashboard() {
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
 
+  // Real-time socket updates for dashboard order plans & inquiries status
+  const token = localStorage.getItem('token') || (user && user.token);
+  const { socket, isConnected } = useSocket(token);
+
   // Payment code verification / simulation state
   const [paymentCode, setPaymentCode] = useState('');
   const [paymentLoading, setPaymentLoading] = useState(false);
   const [paymentFeedback, setPaymentFeedback] = useState('');
+
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleOrderUpdated = (updatedOrder) => {
+      setEditingOrders(prev => {
+        const exists = prev.some(ord => String(ord._id || ord.id) === String(updatedOrder._id || updatedOrder.id));
+        if (exists) {
+          return prev.map(ord => String(ord._id || ord.id) === String(updatedOrder._id || updatedOrder.id) ? updatedOrder : ord);
+        }
+        return [updatedOrder, ...prev];
+      });
+    };
+
+    const handleInquiryUpdated = (updatedInq) => {
+      setServiceInquiries(prev => {
+        const exists = prev.some(inq => String(inq._id || inq.id) === String(updatedInq._id || updatedInq.id));
+        if (exists) {
+          return prev.map(inq => String(inq._id || inq.id) === String(updatedInq._id || updatedInq.id) ? updatedInq : inq);
+        }
+        return [updatedInq, ...prev];
+      });
+      setSelectedInquiry(curr => (curr && String(curr._id || curr.id) === String(updatedInq._id || updatedInq.id) ? updatedInq : curr));
+    };
+
+    socket.on('editingOrderUpdated', handleOrderUpdated);
+    socket.on('serviceInquiryUpdated', handleInquiryUpdated);
+    socket.on('orderStatusChanged', handleOrderUpdated);
+    socket.on('inquiryStatusChanged', handleInquiryUpdated);
+
+    return () => {
+      socket.off('editingOrderUpdated', handleOrderUpdated);
+      socket.off('serviceInquiryUpdated', handleInquiryUpdated);
+      socket.off('orderStatusChanged', handleOrderUpdated);
+      socket.off('inquiryStatusChanged', handleInquiryUpdated);
+    };
+  }, [socket]);
 
   useEffect(() => {
     let isMounted = true;
