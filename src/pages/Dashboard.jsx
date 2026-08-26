@@ -97,10 +97,33 @@ export default function Dashboard() {
         // 3. Editing orders
         setEditingOrders(ordersRes.data || []);
 
-        // 4. Service inquiries – fetch from serviceAPI.getMyInquiries()
-        const myInquiriesRes = await serviceAPI.getMyInquiries().catch(() => ({ data: [] }));
-        const rawInquiries = myInquiriesRes.data?.inquiries || myInquiriesRes.data?.data || myInquiriesRes.data || [];
-        setServiceInquiries(Array.isArray(rawInquiries) ? rawInquiries : []);
+        // 4. Service inquiries – fetched via Promise.all
+        const rawInquiries = inquiriesRes.data?.inquiries || inquiriesRes.data?.data || inquiriesRes.data || [];
+        const userId = profileData._id || profileData.id || user?._id || user?.id;
+        const userEmail = (profileData.email || user?.email || '').toLowerCase().trim();
+
+        let myFilteredInquiries = [];
+        if (Array.isArray(rawInquiries) && rawInquiries.length > 0) {
+          myFilteredInquiries = rawInquiries.filter((item) => {
+            if (!item) return false;
+            let itemUserId = null;
+            if (item.user) {
+              itemUserId = typeof item.user === 'object' ? item.user._id || item.user.id : item.user;
+            } else if (item.userId) {
+              itemUserId = item.userId;
+            } else if (item.clientId) {
+              itemUserId = item.clientId;
+            }
+
+            const itemEmail = (item.email || '').toLowerCase().trim();
+            const matchesUser = userId && itemUserId && String(itemUserId) === String(userId);
+            const matchesEmail = userEmail && itemEmail && itemEmail === userEmail;
+
+            return matchesUser || matchesEmail;
+          });
+        }
+
+        setServiceInquiries(myFilteredInquiries);
 
         // If the inquiries endpoint returned 404, we set a specific error message
         // but we don't want to show it as a critical error – just inform the user.
