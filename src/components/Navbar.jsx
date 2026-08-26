@@ -108,7 +108,7 @@ export default function Navbar() {
                 {/* Header Social Links */}
                 <div className="hidden sm:flex items-center space-x-2 border-l border-white/20 pl-6">
                   <a
-                    href="https://t.me/wubante"
+                    href="https://t.me/hailepp"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white/15 text-white hover:bg-white/25 border border-white/20 text-[11px] font-bold transition-all shadow-sm"
