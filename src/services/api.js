@@ -61,8 +61,8 @@ export const paymentAPI = {
 
 export const serviceAPI = {
   submitInquiry: (inquiryData) => api.post('/services/inquiry', inquiryData),
-  getMyInquiries: () => api.get('/services/my-inquiries'),
-  getMyInquiryById: (id) => api.get(`/services/my-inquiries/${id}`),
+  getMyInquiries: () => api.get('/services/inquiries'),
+  getMyInquiryById: (id) => api.get(`/services/inquiries/${id}`),
 };
 
 export const portfolioAPI = {

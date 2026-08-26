@@ -73,7 +73,7 @@ export default function Dashboard() {
         });
 
         // Other API calls – all safe
-        const [coursesRes, assetsRes, ordersRes, inquiriesRes] = await Promise.all([
+        const [coursesRes, assetsRes, ordersRes, myInquiriesRes] = await Promise.all([
           safeRequest(courseAPI.getCourses(), []),
           safeRequest(assetAPI.getAssets(), []),
           safeRequest(editingOrdersAPI.getMyOrders(), []),
@@ -97,32 +97,9 @@ export default function Dashboard() {
         // 3. Editing orders
         setEditingOrders(ordersRes.data || []);
 
-        // 4. Service inquiries – filter by logged‑in user ID
-        const rawInquiries = inquiriesRes.data?.inquiries || inquiriesRes.data?.data || inquiriesRes.data || [];
-        const userId = profileData._id || profileData.id || user?._id || user?.id;
-
-        let myFilteredInquiries = [];
-        if (rawInquiries.length > 0 && userId) {
-          myFilteredInquiries = rawInquiries.filter((item) => {
-            if (!item) return false;
-            let itemUserId = null;
-            if (item.user) {
-              itemUserId = typeof item.user === 'object' ? item.user._id || item.user.id : item.user;
-            } else if (item.userId) {
-              itemUserId = item.userId;
-            } else if (item.clientId) {
-              itemUserId = item.clientId;
-            }
-            // Compare as strings
-            return userId && itemUserId && String(itemUserId) === String(userId);
-          });
-        } else {
-          // If the endpoint returned 404 or empty, we keep it empty.
-          // If we got data but no userId, we still show them (maybe they are all from this user)
-          myFilteredInquiries = rawInquiries;
-        }
-
-        setServiceInquiries(myFilteredInquiries);
+        // 4. Service inquiries – fetch from serviceAPI.getMyInquiries()
+        const rawInquiries = myInquiriesRes.data?.inquiries || myInquiriesRes.data?.data || myInquiriesRes.data || [];
+        setServiceInquiries(Array.isArray(rawInquiries) ? rawInquiries : []);
 
         // If the inquiries endpoint returned 404, we set a specific error message
         // but we don't want to show it as a critical error – just inform the user.
