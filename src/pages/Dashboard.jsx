@@ -73,7 +73,7 @@ export default function Dashboard() {
         });
 
         // Other API calls – all safe
-        const [coursesRes, assetsRes, ordersRes, myInquiriesRes] = await Promise.all([
+        const [coursesRes, assetsRes, ordersRes, inquiriesRes] = await Promise.all([
           safeRequest(courseAPI.getCourses(), []),
           safeRequest(assetAPI.getAssets(), []),
           safeRequest(editingOrdersAPI.getMyOrders(), []),
@@ -98,6 +98,7 @@ export default function Dashboard() {
         setEditingOrders(ordersRes.data || []);
 
         // 4. Service inquiries – fetch from serviceAPI.getMyInquiries()
+        const myInquiriesRes = await serviceAPI.getMyInquiries().catch(() => ({ data: [] }));
         const rawInquiries = myInquiriesRes.data?.inquiries || myInquiriesRes.data?.data || myInquiriesRes.data || [];
         setServiceInquiries(Array.isArray(rawInquiries) ? rawInquiries : []);
 
