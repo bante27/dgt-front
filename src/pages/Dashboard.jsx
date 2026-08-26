@@ -1,15 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { 
-  BookOpen, 
-  Layers, 
-  Video, 
-  Sparkles, 
-  User, 
-  Clock, 
-  ArrowRight, 
-  CheckCircle2, 
-  TrendingUp, 
-  ShieldCheck,
+import {
+  BookOpen,
+  Layers,
+  Video,
+  Sparkles,
+  User,
+  Clock,
+  ArrowRight,
+  CheckCircle2,
+  TrendingUp,
   Edit3,
   X,
   Check,
@@ -46,7 +45,7 @@ export default function Dashboard() {
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
 
-  // Payment code verification / simulation state
+  // Payment code state
   const [paymentCode, setPaymentCode] = useState('');
   const [paymentLoading, setPaymentLoading] = useState(false);
   const [paymentFeedback, setPaymentFeedback] = useState('');
@@ -57,17 +56,33 @@ export default function Dashboard() {
     const fetchDashboardData = async () => {
       setInquiriesLoading(true);
       setInquiriesError('');
+
+      // Helper to safely get data or fallback to empty array
+      const safeRequest = (promise, fallback = []) =>
+        promise.catch((err) => {
+          // Log the error but don't throw – just return fallback
+          console.warn('API request failed:', err?.config?.url, err?.response?.status);
+          return { data: fallback };
+        });
+
       try {
-        const [profileRes, coursesRes, assetsRes, ordersRes, myInquiriesRes] = await Promise.all([
-          authAPI.getProfile().catch(() => ({ data: user })),
-          courseAPI.getCourses().catch(() => ({ data: [] })),
-          assetAPI.getAssets().catch(() => ({ data: [] })),
-          editingOrdersAPI.getMyOrders().catch(() => ({ data: [] })),
-          serviceAPI.getMyInquiries().catch(() => ({ data: [] }))
+        // Get profile – fallback to context user if 401
+        const profileRes = await authAPI.getProfile().catch((err) => {
+          console.warn('Profile fetch failed (401?):', err?.response?.status);
+          return { data: user };
+        });
+
+        // Other API calls – all safe
+        const [coursesRes, assetsRes, ordersRes, inquiriesRes] = await Promise.all([
+          safeRequest(courseAPI.getCourses(), []),
+          safeRequest(assetAPI.getAssets(), []),
+          safeRequest(editingOrdersAPI.getMyOrders(), []),
+          safeRequest(serviceAPI.getMyInquiries(), [])
         ]);
 
         if (!isMounted) return;
 
+        // 1. Set profile data
         const profileData = profileRes.data?.user || profileRes.data || user || {};
         setProfile(profileData);
         setFirstName(profileData.firstName || '');
@@ -75,47 +90,56 @@ export default function Dashboard() {
         setPhone(profileData.phone || '');
         setImagePreview(profileData.profileImage || '');
 
+        // 2. Courses & Assets
         setAllCourses(coursesRes.data || []);
         setAllAssets(assetsRes.data?.assets || assetsRes.data || []);
+
+        // 3. Editing orders
         setEditingOrders(ordersRes.data || []);
 
-        // Use serviceAPI.getMyInquiries() exclusively to fetch only the logged-in user's inquiries
-        const rawInquiries = myInquiriesRes.data?.inquiries || myInquiriesRes.data?.data || myInquiriesRes.data || [];
-        const userEmail = (profileData.email || user?.email || '').toLowerCase().trim();
+        // 4. Service inquiries – filter by logged‑in user ID
+        const rawInquiries = inquiriesRes.data?.inquiries || inquiriesRes.data?.data || inquiriesRes.data || [];
         const userId = profileData._id || profileData.id || user?._id || user?.id;
 
-        const localInquiries = JSON.parse(localStorage.getItem('my_service_inquiries') || '[]');
-        const localUserInquiries = localInquiries.filter(item => {
-          if (!item) return false;
-          const itemEmail = (item.email || '').toLowerCase().trim();
-          const itemUserId = item.user || item.userId || item.clientId;
-          if (userEmail && itemEmail && itemEmail === userEmail) return true;
-          if (userId && itemUserId && String(itemUserId) === String(userId)) return true;
-          return false;
-        });
+        let myFilteredInquiries = [];
+        if (rawInquiries.length > 0 && userId) {
+          myFilteredInquiries = rawInquiries.filter((item) => {
+            if (!item) return false;
+            let itemUserId = null;
+            if (item.user) {
+              itemUserId = typeof item.user === 'object' ? item.user._id || item.user.id : item.user;
+            } else if (item.userId) {
+              itemUserId = item.userId;
+            } else if (item.clientId) {
+              itemUserId = item.clientId;
+            }
+            // Compare as strings
+            return userId && itemUserId && String(itemUserId) === String(userId);
+          });
+        } else {
+          // If the endpoint returned 404 or empty, we keep it empty.
+          // If we got data but no userId, we still show them (maybe they are all from this user)
+          myFilteredInquiries = rawInquiries;
+        }
 
-        const combined = [...rawInquiries, ...localUserInquiries];
+        setServiceInquiries(myFilteredInquiries);
 
-        // Final strict user filter by ID or Email
-        const myStrictInquiries = combined.filter(item => {
-          if (!item) return false;
-          const itemEmail = (item.email || '').toLowerCase().trim();
-          const itemUserId = item.user || item.userId || item.clientId;
-          
-          if (userEmail && itemEmail && itemEmail === userEmail) return true;
-          if (userId && itemUserId && String(itemUserId) === String(userId)) return true;
-          return false;
-        });
-
-        const uniqueInquiries = Array.from(new Map(myStrictInquiries.map(item => [item._id || item.id, item])).values());
-        
-        setServiceInquiries(uniqueInquiries);
+        // If the inquiries endpoint returned 404, we set a specific error message
+        // but we don't want to show it as a critical error – just inform the user.
+        // We'll detect 404 from the original error if needed, but we already logged it.
+        // We'll set a softer message if no inquiries and we suspect the endpoint is missing.
+        if (rawInquiries.length === 0 && !inquiriesRes.data) {
+          // Possibly the endpoint returned 404 – we can show a friendly message.
+          setInquiriesError('Service inquiries endpoint not available (404).');
+        } else {
+          setInquiriesError(''); // clear any previous error
+        }
       } catch (err) {
         if (!isMounted) return;
-        console.error('Failed to load dashboard data:', err);
-        setError('Failed to load profile details from server.');
-        setInquiriesError('Failed to load your service inquiries from the server.');
+        console.error('Dashboard data fetch error:', err);
+        setError('Could not load all dashboard data. Please try again.');
         setProfile(user || {});
+        setInquiriesError('Unable to load service inquiries.');
       } finally {
         if (isMounted) setInquiriesLoading(false);
       }
@@ -128,6 +152,7 @@ export default function Dashboard() {
     };
   }, [user]);
 
+  // --- Handlers for profile update, payment, etc. (unchanged) ---
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -226,7 +251,7 @@ export default function Dashboard() {
   const watchTimeHours = profile?.watchTime || (enrolledCount * 12) || 0;
 
   return (
-   <div className="relative -mt-2 min-h-screen m-0 p-0 bg-slate-50 text-slate-800 font-sans pb-16 text-xs">
+    <div className="relative -mt-2 min-h-screen m-0 p-0 bg-slate-50 text-slate-800 font-sans pb-16 text-xs">
       
       {/* ===== HERO / WELCOME HEADER BANNER ===== */}
       <section className="w-full bg-[#6B7CFF] text-white py-8 px-4 sm:px-6 lg:px-8 border-b border-indigo-200/50 relative overflow-hidden shadow-sm">
@@ -540,7 +565,7 @@ export default function Dashboard() {
 
           </div>
 
-          {/* Side Column: Payment Code Verification / Simulation, Recent Digital Assets & Quick Services */}
+          {/* Side Column: Payment Code, Recent Downloads, Service Inquiries */}
           <div className="space-y-5">
             
             {/* Payment Code Input Widget */}
@@ -576,8 +601,6 @@ export default function Dashboard() {
               )}
             </div>
 
-
-
             <div className="bg-white rounded-2xl p-5 border border-indigo-100 shadow-sm space-y-3">
               <div className="flex items-center space-x-2 border-b border-slate-100 pb-2.5">
                 <Layers className="w-4 h-4 text-[#6B7CFF]" />
@@ -600,7 +623,7 @@ export default function Dashboard() {
               </ul>
             </div>
 
-            {/* My Service Inquiries Section (Right Side Column) */}
+            {/* My Service Inquiries Section */}
             <div className="bg-white rounded-2xl p-5 border border-indigo-100 shadow-sm space-y-4">
               <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                 <div className="flex items-center space-x-2">
@@ -618,11 +641,11 @@ export default function Dashboard() {
                   <p className="text-[11px] text-slate-400 font-medium">Loading your service inquiries...</p>
                 </div>
               ) : inquiriesError ? (
-                <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-center space-y-2">
-                  <p className="text-[11px] text-rose-700 font-medium">{inquiriesError}</p>
+                <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-center space-y-2">
+                  <p className="text-[11px] text-amber-700 font-medium">{inquiriesError}</p>
                   <button
                     onClick={() => window.location.reload()}
-                    className="px-3 py-1 bg-rose-600 text-white rounded-lg text-[10px] font-bold hover:bg-rose-700 transition-all"
+                    className="px-3 py-1 bg-amber-600 text-white rounded-lg text-[10px] font-bold hover:bg-amber-700 transition-all"
                   >
                     Retry
                   </button>
